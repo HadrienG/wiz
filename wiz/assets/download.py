@@ -41,7 +41,7 @@ class Assembly(object):
         self.ftp_genbank = entrez_dict["FtpPath_GenBank"]
 
 
-def query_assemblies(organism, output):
+def query_assemblies(organism, output, quiet=False):
     """from a taxid or a organism name, download all refseq assemblies
     """
     logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def query_assemblies(organism, output):
     logger.info(f"Found {len(entrez_genomes)} organisms in ncbi assemblies")
 
     logger.info("Querying information about the assemblies. Be patient.")
-    for id in tqdm(entrez_genomes):
+    for id in tqdm(entrez_genomes, disable=quiet):
         try:
             entrez_assembly = Entrez.read(
                 Entrez.esummary(
@@ -70,9 +70,6 @@ def query_assemblies(organism, output):
             output_file = f"{output}/{assembly.accession}.fasta"
             download(assembly.ftp_refseq, output_file)
             assemblies.append(assembly)
-
-    output_file = f"{output}/assemblies.csv"
-    create_summary(assemblies, output_file)
 
     return assemblies
 

@@ -5,6 +5,7 @@ import sys
 import logging
 import argparse
 
+from wiz.assets import util
 from wiz.assets import download
 from wiz.version import __version__
 
@@ -12,8 +13,31 @@ from wiz.version import __version__
 def wiz(args):
     """main function for the wiz software
     """
-    args.clade = "nostocales"
-    a = download.query_assemblies(args.clade, args.output)
+    logger = logging.getLogger(__name__)
+    logger.info(f"Using wiz version {__version__}")
+    logger.debug("Using DEBUG logger")
+
+    try:
+        # create output dir
+        util.create_dir(args.output)
+
+        # download assemblies
+        args.clade = "nostocales"
+        download_output_dir = f"{args.output}/assemblies"
+        util.create_dir(download_output_dir)
+        a = download.query_assemblies(
+            args.clade, download_output_dir, quiet=args.quiet)
+
+        # create csv report
+        output_file = f"{args.output}/assemblies.csv"
+        download.create_summary(a, output_file)
+    except OSError as e:
+        logger.error(f"Directory `{args.output}` exists. Exiting")
+        sys.exit(1)
+    except Exception as e:
+        raise
+    else:
+        logger.info("wiz finished. Goodbye.")
 
 
 def main():
@@ -39,7 +63,7 @@ def main():
         help='Disable info logging'
     )
     parser_logging.add_argument(
-        '--verbose',
+        '--debug',
         action='store_true',
         default=False,
         help='Enable debug logging'
@@ -68,7 +92,7 @@ def main():
             sys.exit(0)
         elif args.quiet:
             logging.basicConfig(level=logging.ERROR)
-        elif args.verbose:
+        elif args.debug:
             logging.basicConfig(level=logging.DEBUG)
         else:
             logging.basicConfig(level=logging.INFO)
