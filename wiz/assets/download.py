@@ -5,6 +5,7 @@ from __future__ import print_function
 
 
 import re
+import csv
 import logging
 
 import requests
@@ -70,21 +71,39 @@ def query_assemblies(organism, output):
             download(assembly.ftp_refseq, output_file)
             assemblies.append(assembly)
 
+    output_file = f"{output}/assemblies.csv"
+    create_summary(assemblies, output_file)
+
     return assemblies
 
 
-def download(url, output, chunk_size=1024):
+def download(url, output_file, chunk_size=1024):
     """download an url
     """
-    logger = logging.getLogger(__name__)
-
-    if url.startswith("ftp://"):
+    if url.startswith("ftp://"):  # requests doesnt support ftp
         url = url.replace("ftp://", "https://")
     if url:
         request = requests.get(url, stream=True)
 
-        with open(output, "wb") as f:
+        with open(output_file, "wb") as f:
             for chunk in request.iter_content(chunk_size=chunk_size):
                 if chunk:
                     f.write(chunk)
                     f.flush()
+
+
+def create_summary(assemblies, output_file):
+    """create a summary csv file from a list of Assemblies
+    """
+    with open(output_file, "w", newline="") as csv_file:
+        writer = csv.writer(csv_file, delimiter=",",
+                            quotechar="|", quoting=csv.QUOTE_MINIMAL)
+        header = ["Accession", "Organism", "Species", "Taxid", "Species Taxid"]
+        writer.writerow(header)
+        for assembly in assemblies:
+            row = [assembly.accession,
+                   assembly.organism,
+                   assembly.species_name,
+                   assembly.taxid,
+                   assembly.species_taxid]
+            writer.writerow(row)
