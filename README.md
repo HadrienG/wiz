@@ -12,4 +12,4 @@ _TODO_
 
 ## License
 
-_TODO_
+[MIT](LICENSE)
