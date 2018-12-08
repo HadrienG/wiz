@@ -1,1 +1,8 @@
+# large files
 test_data
+
+# python stuff
+__pycache__
+
+# tests
+.coverage

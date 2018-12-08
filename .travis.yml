@@ -1,0 +1,16 @@
+language: python
+dist: xenial
+sudo: true
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8-dev"
+install:
+  - pip install pipenv
+  - pipenv install --dev
+script:
+  - pipenv run test
+after_success:
+  - pipenv run codecov
+notifications:
+  email: false

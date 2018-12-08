@@ -11,7 +11,6 @@ import logging
 import requests
 
 from tqdm import tqdm
-from requests_html import HTMLSession
 
 from Bio import Entrez
 

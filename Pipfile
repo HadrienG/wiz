@@ -10,9 +10,13 @@ biopython = "*"
 tqdm = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-cov = "*"
+codecov = "*"
 
 [requires]
 python_version = "3.7"
 
 [scripts]
 wiz = "python -m wiz"
+test = "pytest --cov=./"
