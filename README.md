@@ -1,5 +1,9 @@
 # wiz
 
+[![Build Status](https://travis-ci.com/HadrienG/wiz.svg?token=s9zUD3qF3UxsbHurywD3&branch=master)](https://travis-ci.com/HadrienG/wiz)
+[![Python](https://img.shields.io/badge/made%20with-python%20%3E%3D3.6-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
+
 _takes a metagenome-assembled-genome and does a lot of fancy stuff with it_
 
 ## Introducion
