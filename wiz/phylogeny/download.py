@@ -47,21 +47,23 @@ def query_assemblies(organism, output, quiet=False):
 
     assemblies = []
 
-    entrez_genomes = Entrez.read(Entrez.esearch(
+    genomes = Entrez.read(Entrez.esearch(
         "assembly",
-        term="%s[Organism]" % organism, retmax=10000))["IdList"]
-    logger.info(f"Found {len(entrez_genomes)} organisms in ncbi assemblies")
+        term=f"{organism}[Organism]",
+        retmax=10000))["IdList"]
+    logger.info(
+        f"Found {len(genomes)} organisms in ncbi assemblies for {organism}")
 
-    logger.info("Querying information about the assemblies. Be patient.")
-    for id in tqdm(entrez_genomes, disable=quiet):
+    logger.info("Downloading the assemblies. Please be patient.")
+    for id in tqdm(genomes, disable=quiet):
         try:
             entrez_assembly = Entrez.read(
                 Entrez.esummary(
-                    db='assembly',
+                    db="assembly",
                     id=id))["DocumentSummarySet"]["DocumentSummary"][0]
         except KeyError as e:
             entrez_assembly = Entrez.read(
-                Entrez.esummary(db='assembly', id=id))["DocumentSummarySet"]
+                Entrez.esummary(db="assembly", id=id))["DocumentSummarySet"]
             print(entrez_assembly.keys())
             raise
         else:

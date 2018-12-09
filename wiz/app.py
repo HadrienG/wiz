@@ -5,39 +5,10 @@ import sys
 import logging
 import argparse
 
-from wiz.assets import util
-from wiz.assets import download
+from wiz.misc import util
+from wiz.phylogeny import phylogeny
+
 from wiz.version import __version__
-
-
-def wiz(args):
-    """main function for the wiz software
-    """
-    logger = logging.getLogger(__name__)
-    logger.info(f"Using wiz version {__version__}")
-    logger.debug("Using DEBUG logger")
-
-    try:
-        # create output dir
-        util.create_dir(args.output)
-
-        # download assemblies
-        args.clade = "nostocales"
-        download_output_dir = f"{args.output}/assemblies"
-        util.create_dir(download_output_dir)
-        a = download.query_assemblies(
-            args.clade, download_output_dir, quiet=args.quiet)
-
-        # create csv report
-        output_file = f"{args.output}/assemblies.csv"
-        download.create_summary(a, output_file)
-    except OSError as e:
-        logger.error(f"Directory `{args.output}` exists. Exiting")
-        sys.exit(1)
-    except Exception as e:
-        raise
-    else:
-        logger.info("wiz finished. Goodbye.")
 
 
 def main():
@@ -48,7 +19,10 @@ def main():
         usage="wiz [options] ...",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser_logging = parser.add_mutually_exclusive_group()
+    subparsers = parser.add_subparsers(
+        title='available subcommands',
+        metavar=''
+    )
     parser.add_argument(
         "-v",
         "--version",
@@ -56,6 +30,15 @@ def main():
         default=False,
         help="print software version and exit"
     )
+
+    # phylogeny parser
+    parser_phylogeny = subparsers.add_parser(
+        'phylogeny',
+        prog='wiz phylogeny',
+        description='phylogeny module',
+        help='wiz: phylogeny module'
+    )
+    parser_logging = parser_phylogeny.add_mutually_exclusive_group()
     parser_logging.add_argument(
         '--quiet',
         action='store_true',
@@ -68,14 +51,14 @@ def main():
         default=False,
         help='Enable debug logging'
     )
-    parser.add_argument(
+    parser_phylogeny.add_argument(
         "-c",
         "--clade",
         type=str,
         metavar="",
         help="clade used for phylogeny and pan-genome analysis"
     )
-    parser.add_argument(
+    parser_phylogeny.add_argument(
         "-o",
         "--output",
         type=str,
@@ -83,7 +66,7 @@ def main():
         default="wiz",
         help=f"output directory"
     )
-    parser.set_defaults(func=wiz)
+    parser_phylogeny.set_defaults(func=phylogeny.run)
     args = parser.parse_args()
 
     try:
@@ -97,6 +80,9 @@ def main():
         else:
             logging.basicConfig(level=logging.INFO)
 
+        logger = logging.getLogger(__name__)
+        logger.info(f"Using wiz version {__version__}")
+        logger.debug("Using DEBUG logger")
         args.func(args)
         logging.shutdown()
     except AttributeError as e:
