@@ -40,17 +40,23 @@ class Assembly(object):
         self.ftp_genbank = entrez_dict["FtpPath_GenBank"]
 
 
-def query_assemblies(organism, output, quiet=False):
+def query_assemblies(organism, output, quiet=False, representative=False):
     """from a taxid or a organism name, download all refseq assemblies
     """
     logger = logging.getLogger(__name__)
 
     assemblies = []
 
-    genomes = Entrez.read(Entrez.esearch(
-        "assembly",
-        term=f"{organism}[Organism]",
-        retmax=10000))["IdList"]
+    if representative:
+        genomes = Entrez.read(Entrez.esearch(
+            "assembly",
+            term=f"{organism}[Organism] AND \"representative genome\"[filter]",
+            retmax=10000))["IdList"]
+    else:
+        genomes = Entrez.read(Entrez.esearch(
+            "assembly",
+            term=f"{organism}[Organism]",
+            retmax=10000))["IdList"]
     logger.info(
         f"Found {len(genomes)} organisms in ncbi assemblies for {organism}")
 
