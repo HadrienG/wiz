@@ -18,6 +18,6 @@ def teardown_module():
 
 def test_query_assemblies():
     assemblies = download.query_assemblies(
-        "Nostoc", "test_output_dir")
+        "Nostoc", "test_output_dir", representative=True)
     # bad test, will break if a new genome is added
-    assert len(assemblies) == 46
+    assert len(assemblies) == 3

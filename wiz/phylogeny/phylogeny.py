@@ -19,10 +19,8 @@ def run(args):
 
         # download assemblies
         args.clade = "nostocales"
-        download_output_dir = f"{args.output}/assemblies"
-        util.create_dir(download_output_dir)
         a = download.query_assemblies(
-            args.clade, download_output_dir, quiet=args.quiet)
+            args.clade, args.output, quiet=args.quiet, representative=True)
 
         # create csv report
         output_file = f"{args.output}/assemblies.csv"

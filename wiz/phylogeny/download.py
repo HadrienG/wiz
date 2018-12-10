@@ -9,10 +9,13 @@ import csv
 import logging
 
 import requests
+from requests_html import HTMLSession
 
 from tqdm import tqdm
 
 from Bio import Entrez
+
+from wiz.misc import util
 
 Entrez.tool = "wiz"
 Entrez.email = ""
@@ -45,6 +48,10 @@ def query_assemblies(organism, output, quiet=False, representative=False):
     """
     logger = logging.getLogger(__name__)
 
+    # create output directories
+    util.create_dir(f"{output}/assemblies", force=True)
+    util.create_dir(f"{output}/proteins", force=True)
+
     assemblies = []
 
     if representative:
@@ -60,7 +67,8 @@ def query_assemblies(organism, output, quiet=False, representative=False):
     logger.info(
         f"Found {len(genomes)} organisms in ncbi assemblies for {organism}")
 
-    logger.info("Downloading the assemblies. Please be patient.")
+    logger.info(
+        "Downloading the assemblies and associated proteins. Please wait.")
     for id in tqdm(genomes, disable=quiet):
         try:
             entrez_assembly = Entrez.read(
@@ -73,10 +81,15 @@ def query_assemblies(organism, output, quiet=False, representative=False):
             print(entrez_assembly.keys())
             raise
         else:
-            assembly = Assembly(entrez_assembly)
-            output_file = f"{output}/{assembly.accession}.fasta"
-            download(assembly.ftp_refseq, output_file)
-            assemblies.append(assembly)
+            a = Assembly(entrez_assembly)
+            output_assembly = f"{output}/assemblies/{a.accession}.fasta.gz"
+            output_proteins = f"{output}/proteins/{a.accession}.faa.gz"
+
+            url_ass = f"{a.ftp_refseq}/{a.accession}_{a.name}_genomic.fna.gz"
+            url_prot = f"{a.ftp_refseq}/{a.accession}_{a.name}_protein.faa.gz"
+            download(url_ass, output_assembly)
+            download(url_prot, output_proteins)
+            assemblies.append(a)
 
     return assemblies
 
