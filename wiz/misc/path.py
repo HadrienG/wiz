@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""contains path utilities for wiz
+"""
 
 import os
 import shutil
@@ -31,8 +32,7 @@ def create_dir(dir_name, force=False):
     logger = logging.getLogger(__name__)
     try:
         path = Path(dir_name)
-        path.mkdir(exist_ok=force)
-
+        path.mkdir(parents=True, exist_ok=force)
         return path.absolute()
     except OSError as e:
         logger.debug(f"{dir_name} already exists")
@@ -47,3 +47,11 @@ def software_exists(software_name):
         return s
     else:
         raise SoftwareNotFoundError(software_name)
+
+
+def collect(dir_name, extension=".faa", recursive=False):
+    """collect all files of the same extension in a directory
+    """
+    path = Path(dir_name)
+    result = path.glob("**/*.faa")
+    return list(result)

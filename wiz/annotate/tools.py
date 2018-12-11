@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import subprocess
 
-from wiz.misc import util
+from wiz.misc import path
 
 
 def prodigal(genome, output_prefix="bin", trans_table=11, output_dir=None):
     """wrapper function around prodigal
     """
-    prodigal = util.software_exists("prodigal")
+    logger = logging.getLogger(__name__)
+
+    prodigal = path.software_exists("prodigal")
     if output_dir:
         out_prot = f"{output_dir}/{output_prefix}.faa"
         out_gff = f"{output_dir}/{output_prefix}.gff"
@@ -23,6 +26,7 @@ def prodigal(genome, output_prefix="bin", trans_table=11, output_dir=None):
         "genes": out_gff
     }
 
+    logger.info("Running prodigal")
     gff = subprocess.run([prodigal, "-i", args["input"], "-g",
                           args["trans_table"], "-m", "-f", "gff",
                           "-a", args["proteins"]],

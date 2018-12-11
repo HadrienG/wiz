@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 from Bio import Entrez
 
-from wiz.misc import util
+from wiz.misc import path
 
 Entrez.tool = "wiz"
 Entrez.email = ""
@@ -49,8 +49,8 @@ def query_assemblies(organism, output, quiet=False, representative=False):
     logger = logging.getLogger(__name__)
 
     # create output directories
-    util.create_dir(f"{output}/assemblies", force=True)
-    util.create_dir(f"{output}/proteins", force=True)
+    path.create_dir(f"{output}/assemblies", force=True)
+    path.create_dir(f"{output}/proteins", force=True)
 
     assemblies = []
 

@@ -1,5 +1,6 @@
 # large files
 test_data
+clade_data
 
 # python stuff
 __pycache__
