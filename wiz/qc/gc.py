@@ -3,21 +3,23 @@ from Bio.Alphabet import IUPAC
 from Bio.SeqUtils import GC
 
 
-def bio_package_gc(sequence):
-    return GC(sequence)
+# ===== abandoned approach =====
+# def bio_package_gc(sequence):
+#   return GC(sequence)
 
 
-def average_gc(sequence):
-    sequence = sequence.upper()
-    gc_count = 0
-    for nucl in sequence:
-        if nucl in ["G", "C", "S"]:
-            gc_count += 1
-    average = (gc_count / len(sequence))*100
-    return average
+# ===== abandoned approach =====
+# def average_gc(sequence):
+#     sequence = sequence.upper()
+#     gc_count = 0
+#     for nucl in sequence:
+#         if nucl in ["G", "C", "S"]:
+#             gc_count += 1
+#     average = (gc_count / len(sequence))*100
+#     return average
 
 
-def average_gc_by_frame(sequence, len_frame):
+def average_gc_by_frame(sequence, len_frame=5):
     if frame > len(sequence):
         raise ValueError("The size of the frame is superior of the sequence length.")
     if frame <= 0:
