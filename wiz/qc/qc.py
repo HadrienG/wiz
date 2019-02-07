@@ -3,4 +3,8 @@
 
 
 def run(args):
+    """
+    main function for wiz quality check (qc)
+    """
+    
     print("implemented!")
