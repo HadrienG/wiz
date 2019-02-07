@@ -21,7 +21,7 @@ def max_mem():
         hostinfo.wait()
         max_mem = float(mem.split()[3].decode())
         return max_mem
-    else if platform.system() == 'Linux':
+    elif platform.system() == 'Linux':
         mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
         max_mem = mem_bytes/(1024.**3)
         return max_mem

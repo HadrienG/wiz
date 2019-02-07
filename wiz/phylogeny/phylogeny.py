@@ -6,7 +6,9 @@ import logging
 
 from wiz.misc import path
 from wiz.phylogeny import download
+from wiz.phylogeny.tools import cd_hit
 from wiz.annotate.tools import prodigal
+
 
 from wiz.misc.path import SoftwareNotFoundError
 
@@ -36,14 +38,23 @@ def run(args):
 
         # run prodigal
         prodigal(args.genome, output_dir=args.output)
+
+        # collect all faa files for cd-hit
         if args.clade:
             protein_files = path.collect(args.output)
         else:
             protein_files = path.collect(
                 args.clade_dir) + path.collect(args.output)
-
+            # print(f"faas: {args.clade_dir}")
+        # before running cd-hit we need to uncompress input .faa files if they
+        # are gzipped
+        protein_files = path.uncompress(protein_files)
+        print(f"uncompressed:{protein_files}")
         # run cd-hit
-        # ...
+        # TODO: cd-hit takes only one file as input.
+        # TODO RENAME AND CONCATENATE
+        cd_hit(protein_files, output_dir=args.output)
+
     except OSError as e:
         logger.error(f"Directory `{args.output}` already exists. Exiting")
         sys.exit(1)

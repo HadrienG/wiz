@@ -4,12 +4,12 @@
 import os
 import shutil
 
-from wiz.misc import util
+from wiz.misc import path
 from wiz.phylogeny import download
 
 
 def setup_module():
-    util.create_dir("test_output_dir")
+    path.create_dir("test_output_dir")
 
 
 def teardown_module():

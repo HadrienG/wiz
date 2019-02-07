@@ -3,6 +3,7 @@
 """
 
 import os
+import gzip
 import shutil
 import logging
 
@@ -49,9 +50,46 @@ def software_exists(software_name):
         raise SoftwareNotFoundError(software_name)
 
 
-def collect(dir_name, extension=".faa", recursive=False):
+def collect(dir_name, extension=".faa.gz", recursive=False):
     """collect all files of the same extension in a directory
     """
+    extension_uncompressed = extension.split(".")[:-1]
     path = Path(dir_name)
-    result = path.glob("**/*.faa")
-    return list(result)
+    result_compressed = path.glob(f"**/*{extension}")
+    result_uncompressed = path.glob(f"**/*{extension_uncompressed}")
+    return list(result_compressed) + list(result_uncompressed)
+
+
+def uncompress(paths, remove=True):
+    """uncompress all .gz files from a list of paths
+    """
+    uncompressed_paths = []
+    for path in paths:
+        out_path = path.with_suffix("")
+        if is_gzipped(path):
+            with gzip.open(path, "rb") as i, open(out_path, "wb") as o:
+                shutil.copyfileobj(i, o)
+            if remove:
+                Path.unlink(path)
+            uncompressed_paths.append(out_path)
+        else:
+            uncompressed_paths.append(path)
+    return(uncompressed_paths)
+
+
+def is_gzipped(infile):
+    """Check in a file is in gzip format or not
+    """
+    logger = logging.getLogger(__name__)
+
+    magic_number = b'\x1f\x8b'
+    f = open(infile, 'rb')
+    with f:
+        try:
+            assert f.read(2) == magic_number
+        except AssertionError as e:
+            logger.debug(f'{infile} is not gzipped')
+            return False
+        else:
+            logger.debug(f'{infile} is gzipped')
+            return True

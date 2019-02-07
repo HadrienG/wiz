@@ -105,7 +105,7 @@ def main():
         logger.debug(e)
         parser.print_help()
         logging.shutdown()
-        raise  # extra traceback to uncomment for extra debugging powers
+        # raise  # extra traceback to uncomment for extra debugging powers
 
 
 if __name__ == "__main__":
