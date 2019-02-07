@@ -1,6 +1,8 @@
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
 from Bio.SeqUtils import GC
+from plotly.offline import plot
+import plotly.figure_factory as ff
 
 
 # ===== abandoned approach =====
@@ -21,7 +23,7 @@ from Bio.SeqUtils import GC
 
 def check_frame_size(sequence, len_frame):
     if len(sequence) == 0:
-        error = "The sequence is void"
+        error = "The sequence is void."
         raise ValueError(error)
     if len_frame <= 0:
         error = "The size of the frame is negative or null."
@@ -36,15 +38,25 @@ def average_gc_by_frame(sequence, len_frame=5000):
     if check_frame_size(sequence, len_frame):
         average_gc_by_windows = []
         for pos in range(0, len(sequence), len_frame):
-            average_gc = 0
             if pos+len_frame < len(sequence):
-                average_gc = GC(sequence[pos:pos+len_frame])
+                subsequence = sequence[pos:pos+len_frame]
             else:
-                average_gc = GC(sequence[pos:])
-            average_gc_by_windows.append(average_gc)
+                subsequence = sequence[pos:]
+            average_gc = GC(subsequence)
+            average_gc_by_windows.append(average_gc, subsequence)
         return average_gc_by_windows
 
 
-def gc_histogram(sequence, len_frame=5000):
-    # coming soon
-    pass
+def gc_hist(sequence, len_frame=5000):
+    data = average_gc_by_frame(sequence, len_frame)
+    fig = ff.create_distplot(data, "bin", bin_size=100)
+    plot(fig)
+
+# def gc_deviating(sequence):
+#     average_gc = average_gc_by_frame(sequence)
+#     copy_average_gc = list(average_gc)
+#     copy_average_gc.sort
+#     seq_under_pourcentil = copy_average_gc[:int(len(average_gc)*0.025)]
+#     seq_over_pourcentil = copy_average_gc[-int(len(average_gc)*0.025):]
+#     seq_inside_pourcentil = [i for i in range]
+#     return(seq_under_pourcentil,average_gc,seq_over_pourcentil)
