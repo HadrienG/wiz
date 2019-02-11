@@ -5,6 +5,7 @@ import sys
 import logging
 import argparse
 
+from wiz.qc import qc
 from wiz.misc import util
 from wiz.phylogeny import phylogeny
 
@@ -38,14 +39,14 @@ def main():
         description='phylogeny module',
         help='wiz: phylogeny module'
     )
-    parser_logging = parser_phylogeny.add_mutually_exclusive_group()
-    parser_logging.add_argument(
+    parser_logging_p = parser_phylogeny.add_mutually_exclusive_group()
+    parser_logging_p.add_argument(
         '--quiet',
         action='store_true',
         default=False,
         help='Disable info logging'
     )
-    parser_logging.add_argument(
+    parser_logging_p.add_argument(
         '--debug',
         action='store_true',
         default=False,
@@ -63,10 +64,49 @@ def main():
         "--output",
         type=str,
         metavar="",
-        default="wiz",
+        default="wiz_output",
         help=f"output directory"
     )
     parser_phylogeny.set_defaults(func=phylogeny.run)
+
+    # qc subparser
+    parser_qc = subparsers.add_parser(
+        'qc',
+        prog='wiz qc',
+        description='qc module',
+        help='wiz: qc module'
+    )
+    parser_logging_q = parser_qc.add_mutually_exclusive_group()
+    parser_logging_q.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Disable info logging'
+    )
+    parser_logging_q.add_argument(
+        '--debug',
+        action='store_true',
+        default=False,
+        help='Enable debug logging'
+    )
+    parser_qc.add_argument(
+        "-g",
+        "--genome",
+        type=str,
+        metavar="",
+        help="input genome bin in fasta format",
+        required=True
+    )
+    parser_qc.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        metavar="",
+        default="wiz_output",
+        help=f"output directory"
+    )
+    parser_qc.set_defaults(func=qc.run)
+
     args = parser.parse_args()
 
     try:
