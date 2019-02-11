@@ -1,109 +1,107 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
+from math import log
 from Bio.SeqUtils import GC
 from plotly.offline import plot
-import plotly.figure_factory as ff
-import plotly.graph_objs as go
-from numpy import histogram
+from plotly.figure_factory import create_distplot as distplot
+from plotly.graph_objs import Histogram, Figure, Layout, Scatter
 
 
-def check_frame_size(sequence, len_frame):
+def check_window_size(sequence, window_size):       # I think it's OK
     if len(sequence) == 0:
         error = "The sequence is void."
         raise ValueError(error)
-    if len_frame <= 0:
-        error = "The size of the frame is negative or null."
+    if window_size < 0:
+        error = "The size of the window is negative."
         raise ValueError(error)
-    if len_frame > len(sequence):
-        error = "The size of the frame is superior of the sequence length."
+    if window_size == 0:
+        error = "The size of the window is null."
+        raise ValueError(error)
+    if window_size > len(sequence):
+        error = "The size of the window is superior of the sequence length."
         raise ValueError(error)
     return True
 
 
-def average_gc_by_frame(sequence, len_frame=5000):
-    if check_frame_size(sequence, len_frame):
-        average_gc_by_windows = []
-        for pos in range(0, len(sequence), len_frame):
-            if pos+len_frame < len(sequence):
-                subsequence = sequence[pos:pos+len_frame]
+def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
+    """
+    Return a list with for each window of size window_size the average of GC.
+    The last one windows can be more small that the others windows due of the
+    sequence length. The result of the window of length inferior at window_size
+    can be removed with the parameter truncate=True
+    """
+    if check_window_size(sequence, window_size):
+        average = []
+        seq_size = len(sequence)
+        for pos in range(0, seq_size, window_size):
+            if pos+window_size < seq_size:
+                subseq = sequence[pos:pos+window_size]
             else:
-                subsequence = sequence[pos:]
-            average_gc = GC(subsequence)
-            average_gc_by_windows.append(average_gc, subsequence)
-        return average_gc_by_windows
+                if not truncate:
+                    subseq = sequence[pos:]
+                else:
+                    break
+            average.append(GC(subseq))
+        return average
 
 
-def gc_hist(sequence_list, len_frame=5000):
-    """
-    Accept in args a list of tupple (sequence, name) and optionally the framesize (int)
-    sequence_list = [(sequence, name), (sequence, name),...]
-    """
-    average_gc = [average_gc_by_frame(sequence, len_frame) for sequence, name_seq in sequence_list]
-    name_seq = [name for sequence, name in sequence_list]
-
-    # Create a histogram with for each frame in the sequence the average of GC
-    fig = ff.create_distplot(average_gc, name_seq)
+def distplot_gc(data):  # waiting a test
+    seq_values, seq_names = extract_values(data)
+    fig = distplot(seq_values, seq_names)
     plot(fig)
 
-    # Create a histogram with for each average of GC in the sequence
-    # the number of sequence with this average
-    # <!> Work in progress, go around please and pay attention to your head when you going out <!>
-    # <!> Experimental code : he look forward to trying <!>
+
+def histogram_gc(data, window_size=5000):  # waiting a test
+    seq_values, seq_names = extract_values(data)
     hist_data = []
-    for data, name in zip(average_gc, name_seq):
-        hist_dat, bin_pos = histogram(data, bins=100)
-        """ Warning,
-        the function histogram return 2 lists,
-        a list with the number of seq in each bins
-        and a list who delimit the position of each bins
-        """
-        x_start, x_stop, x_step = bin_pos[0], bin_pos[-1], bin_pos[-1]-bin_pos[-2]
-        trace = go.Histogram(
-            x=hist_dat,
-            name=name_seq,
-            xbins=dict(start=x_start, end=x_step, size=x_step),
-            opacity=0.5)
-        hist_data.append(trace)
-    layout = go.Layout(
-        title="Number of sequence by average GC",
-        xaxis=dict(title="average GC"),
-        yaxis=dict(title="number of sequence")
-        bargap=0.2,
-        bargroupgap=0.3
+    for values, name in zip(seq_values, seq_names):
+        hist_data.append(Histogram(
+            x=values,
+            name=name,
+            opacity=0.5
+        ))
+    layout = Layout(
+        title=f"Average GC per windows of {unit(window_size)}",
+        xaxis=dict(title=f"Pourcent of GC"),
+        yaxis=dict(title="Sequence number"),
+        barmode='overlay'
     )
-    fig2 = go.Figure(hist_data, layout)
-    plot(fig2)
+    fig = Figure(data=hist_data, layout=layout)
+    plot(fig)
 
 
-#   ==================
-#   the area of shame:
-#   ==================
+def scatter_gc(data, window_size=5000):  # waiting a test
+    seq_values, seq_names = extract_values(data)
+    plotdata = [Scatter(x=[0], y=[0], name="bound down"), Scatter(x=[0], y=[100], name="bound up")]
+    for seq, name in zip(seq_values, seq_names):
+        position = [i*window_size for i in range(0, len(seq))]
+        plotdata.append(Scatter(x=position, y=seq, name=name))
+    plot(plotdata)
+
+# facultative functions =============================================
 
 
-# ===== abandoned approach =====
-# def bio_package_gc(sequence):
-#   return GC(sequence)
+def unit(window_size):  # I think it's OK
+    return f"{round_value(window_size)} {factor10_unit(window_size)}"
 
 
-# ===== abandoned approach =====
-# def average_gc(sequence):
-#     sequence = sequence.upper()
-#     gc_count = 0
-#     for nucl in sequence:
-#         if nucl in ["G", "C", "S"]:
-#             gc_count += 1
-#     average = (gc_count / len(sequence))*100
-#     return average
+def factor10_unit(window_size):  # I think it's OK
+    unit = ["b", "Kb", "Mb", "Gb", "Tb"]
+    log_value = int(log(window_size, 1000))
+    return unit[log_value]
 
 
-# def gc_deviating(sequence):
-#     average_gc = average_gc_by_frame(sequence)
-#     copy_average_gc = list(average_gc)
-#     copy_average_gc.sort
-#     seq_under_pourcentil = copy_average_gc[:int(len(average_gc)*0.025)]
-#     seq_over_pourcentil = copy_average_gc[-int(len(average_gc)*0.025):]
-#     seq_inside_pourcentil = [i for i in range]
-#     return(seq_under_pourcentil,average_gc,seq_over_pourcentil)
+def round_value(window_size):  # I think it's OK
+    log_value = int(log(window_size, 1000))
+    numeric_value = round(window_size/1000**log_value, 2)
+    return numeric_value
+
+
+def extract_values(data):  # I think it's OK
+    seq_values, seq_names = [], []
+    for dat in data:
+        seq, name = dat
+        seq_values.append(seq)
+        seq_names.append(name)
+    return (seq_values, seq_names)
