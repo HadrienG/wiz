@@ -6,6 +6,7 @@ from Bio.SeqUtils import GC
 from plotly.offline import plot
 from plotly.figure_factory import create_distplot as distplot
 from plotly.graph_objs import Histogram, Figure, Layout, Scatter
+from numpy import percentile
 
 
 def check_window_size(sequence, window_size):       # I think it's OK
@@ -45,6 +46,13 @@ def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
             average.append(GC(subseq))
         return average
 
+
+def cleaning(average):  # WIP need testing
+    clean_seq = percentile(average, 0.95)
+    return clean_seq
+
+
+# Graph functions
 
 def distplot_gc(data):  # waiting a test
     seq_values, seq_names = extract_values(data)
