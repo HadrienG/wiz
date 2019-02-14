@@ -47,12 +47,16 @@ def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
         return average
 
 
-def cleaning(average):  # WIP need testing
-    clean_seq = percentile(average, 0.95)
-    return clean_seq
-
+def cleaning(average, percent=95):  # WIP need testing
+    percentil95 = percentile(average, percent/100)
+    outbounded_index = []
+    for value in average:
+        if value > percentil95:
+            outbounded_index.append(average.index(value))
+    return outbounded_index
 
 # Graph functions
+
 
 def distplot_gc(data):  # waiting a test
     seq_values, seq_names = extract_values(data)
