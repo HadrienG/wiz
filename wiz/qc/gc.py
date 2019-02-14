@@ -63,29 +63,32 @@ def distplot_gc(data):  # waiting a test
     fig = distplot(seq_values, seq_names)
     plot(fig)
 
-
-def histogram_gc(data, window_size=5000):  # waiting a test
-    seq_values, seq_names = extract_values(data)
-    hist_data = []
-    for values, name in zip(seq_values, seq_names):
-        hist_data.append(Histogram(
-            x=values,
-            name=name,
-            opacity=0.5
-        ))
-    layout = Layout(
-        title=f"Average GC per windows of {unit(window_size)}",
-        xaxis=dict(title=f"Pourcent of GC"),
-        yaxis=dict(title="Sequence number"),
-        barmode='overlay'
-    )
-    fig = Figure(data=hist_data, layout=layout)
-    plot(fig)
+# No the best way
+# def histogram_gc(data, window_size=5000):  # waiting a test
+#     seq_values, seq_names = extract_values(data)
+#     hist_data = []
+#     for values, name in zip(seq_values, seq_names):
+#         hist_data.append(Histogram(
+#             x=values,
+#             name=name,
+#             opacity=0.5
+#         ))
+#     layout = Layout(
+#         title=f"Average GC per windows of {unit(window_size)}",
+#         xaxis=dict(title=f"Pourcent of GC"),
+#         yaxis=dict(title="Sequence number"),
+#         barmode='overlay'
+#     )
+#     fig = Figure(data=hist_data, layout=layout)
+#     plot(fig)
 
 
 def scatter_gc(data, window_size=5000):  # waiting a test
     seq_values, seq_names = extract_values(data)
-    plotdata = [Scatter(x=[0], y=[0], name="bound down"), Scatter(x=[0], y=[100], name="bound up")]
+    plotdata = [  # Add two points on graph to fix the up and down bounds
+        Scatter(x=[0], y=[0], name="bound down", visible=False),
+        Scatter(x=[0], y=[100], name="bound up", visible=False)
+        ]
     for seq, name in zip(seq_values, seq_names):
         position = [i*window_size for i in range(0, len(seq))]
         plotdata.append(Scatter(x=position, y=seq, name=name))
