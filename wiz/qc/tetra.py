@@ -13,3 +13,7 @@ def tetranuc_count(sequence):
             tetra_dic[buffer] = 1
         buffer = str(buffer[1:])
     return tetra_dic
+
+
+#* It's ok here
+# TODO Make dataframe with the values returned

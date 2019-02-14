@@ -9,3 +9,6 @@ class bins:
         self.name = seq.name
         self.gc = []
         self.tetra = []
+
+
+# TODO Validating the class

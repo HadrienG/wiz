@@ -12,6 +12,7 @@ tqdm = "*"
 pytest = "*"
 pytest-cov = "*"
 codecov = "*"
+pep8 = "*"
 
 [requires]
 python_version = "3.7"

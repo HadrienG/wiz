@@ -23,3 +23,5 @@ def genome_parser(file, format):
             raise ValueError("Files not found")
     else:
         raise ValueError("Files format not supported")
+
+# TODO Permit the import of folder

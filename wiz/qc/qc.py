@@ -27,3 +27,5 @@ def run(args):
         sys.exit(1)
     else:
         logger.info("wiz qc finished. Goodbye.")
+
+#TODO adding parameter
