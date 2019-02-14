@@ -15,5 +15,5 @@ def tetranuc_count(sequence):
     return tetra_dic
 
 
-#* It's ok here
+# * It's ok here
 # TODO Make dataframe with the values returned

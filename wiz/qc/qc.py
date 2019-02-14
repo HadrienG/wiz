@@ -28,4 +28,4 @@ def run(args):
     else:
         logger.info("wiz qc finished. Goodbye.")
 
-#TODO adding parameter
+# TODO adding parameter
