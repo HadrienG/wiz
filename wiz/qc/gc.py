@@ -47,11 +47,11 @@ def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
         return average
 
 
-def cleaning(average, percent=95):  # WIP need testing
-    percentil95 = percentile(average, percent/100)
+def percentil95(average, percent=95):  # WIP need testing
+    P95 = percentile(average, percent/100)
     outbounded_index = []
     for value in average:
-        if value > percentil95:
+        if value > P95:
             outbounded_index.append(average.index(value))
     return outbounded_index
 
