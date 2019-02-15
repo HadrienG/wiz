@@ -12,19 +12,20 @@ def run(args):
     main function for wiz quality check (qc)
     """
     logger = logging.getLogger(__name__)
+    logger.info("wiz qc started !")
 
     try:
         gc_per_bin = []
-        for genome in args.genome:
-            seq = bins.bins(tools.genome_parser(genome, "fasta"))
-            seq.gc = gc.average_gc(seq.seq, truncate=True)
-            seq.tetra = tetra.tetranuc_count(seq.seq)
-            gc.scatter_gc(seq.gc)
-            gc.distplot_gc(seq.gc)
-            gc.histogram_gc(seq.gc)
+        logger.info(f"genome: {args.genome}")
+        seq = bins.Bins(tools.genome_parser(args.genome))
+        seq.gc = gc.average_gc(seq.seq, truncate=True)
+        seq.tetra = tetra.tetranuc_count(seq.seq)
+        gc.scatter_gc(seq.gc)
+        gc.distplot_gc(seq.gc)
+        gc.histogram_gc(seq.gc)
     except ValueError as Ve:
         logger.error("something bad happened")
-        logger.exception(Ve)
+        logger.error(Ve)
         sys.exit(1)
     except KeyboardInterrupt:
         logger.error("something bad happened ?")

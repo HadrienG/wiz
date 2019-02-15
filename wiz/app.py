@@ -89,12 +89,12 @@ def main():
         default=False,
         help='Enable debug logging'
     )
-    parser_qc.add_argument(
+    parser_qc.add_argument(  #! TODO fix the bug with the path 
         "-g",
         "--genome",
         type=str,
         metavar="",
-        help="input genome bin in fasta format",
+        help="input the folder of genome bin in fasta format",
         required=True
     )
     parser_qc.add_argument(
