@@ -34,3 +34,4 @@ def run(args):
         logger.info("wiz qc finished. Goodbye.")
 
 # TODO adding parameter
+# TODO converting genome parameter in genome folder
