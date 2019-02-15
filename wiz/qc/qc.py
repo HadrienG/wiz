@@ -4,7 +4,7 @@
 import sys
 import logging
 
-from wiz.qc import gc, tools, qcclass, tetra
+from wiz.qc import gc, tools, bins, tetra
 
 
 def run(args):
@@ -16,15 +16,19 @@ def run(args):
     try:
         gc_per_bin = []
         for genome in args.genome:
-            seq = qcclass.bins(tools.genome_parser(genome, "fasta"))
+            seq = bins.bins(tools.genome_parser(genome, "fasta"))
             seq.gc = gc.average_gc(seq.seq, truncate=True)
             seq.tetra = tetra.tetranuc_count(seq.seq)
             gc.scatter_gc(seq.gc)
             gc.distplot_gc(seq.gc)
             gc.histogram_gc(seq.gc)
-    except expression as identifier:
+    except ValueError as Ve:
         logger.error("something bad happened")
+        logger.exception(Ve)
         sys.exit(1)
+    except KeyboardInterrupt:
+        logger.error("something bad happened ?")
+        logger.error("You cancelled the operation.")
     else:
         logger.info("wiz qc finished. Goodbye.")
 

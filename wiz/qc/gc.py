@@ -62,7 +62,7 @@ def distplot_gc(data):  # waiting a test
     seq_values, seq_names = extract_values(data)
     fig = distplot(seq_values, seq_names)
     plot(fig)
-# TODO comment the displot graph 
+# TODO comment the displot graph
 # No the best way
 # def histogram_gc(data, window_size=5000):  # waiting a test
 #     seq_values, seq_names = extract_values(data)
@@ -91,10 +91,10 @@ def scatter_gc(data, window_size=5000):  # waiting a test
         plotdata.append(Scatter(x=position, y=seq, name=name))
     layout = Layout( # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
-        xaxis=dict(title=f"Pourcent of GC",range([0,100])),
+        xaxis=dict(title=f"Pourcent of GC", range=[0, 100]),
         yaxis=dict(title="Sequence number"),
     )
-    fig = Figure(plotdata,layout)
+    fig = Figure(plotdata, layout)
     plot(fig)
 
 # TODO Try to plot on graph windows outside the 95e percentil
