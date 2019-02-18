@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from math import log
+
 from Bio.SeqUtils import GC
-from plotly.offline import plot
-from plotly.figure_factory import create_distplot as distplot
-from plotly.graph_objs import Histogram, Figure, Layout, Scatter
 from numpy import percentile
 
 
@@ -54,74 +51,5 @@ def percentil_filter(average, percent=[5, 95]):  # WIP need testing
             average.pop(average.index(value))
     return average
 
-# Graph functions
-
-
-def distplot_gc(data):  # waiting a test
-    seq_values, seq_names = extract_values(data)
-    fig = distplot(seq_values, seq_names)
-    plot(fig)
-# TODO comment the displot graph
-# No the best way
-# def histogram_gc(data, window_size=5000):  # waiting a test
-#     seq_values, seq_names = extract_values(data)
-#     hist_data = []
-#     for values, name in zip(seq_values, seq_names):
-#         hist_data.append(Histogram(
-#             x=values,
-#             name=name,
-#             opacity=0.5
-#         ))
-#     layout = Layout(
-#         title=f"Average GC per windows of {unit(window_size)}",
-#         xaxis=dict(title=f"Pourcent of GC"),
-#         yaxis=dict(title="Sequence number"),
-#         barmode='overlay'
-#     )
-#     fig = Figure(data=hist_data, layout=layout)
-#     plot(fig)
-
-
-def scatter_gc(data, window_size=5000):  # waiting a test
-    seq_values, seq_names = extract_values(data)
-    plotdata = []
-    for seq, name in zip(seq_values, seq_names):
-        position = [i*window_size for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=seq, name=name))
-    layout = Layout(  # * Try to change scatter in plot or bar
-        title=f"Average GC per windows of {unit(window_size)}",
-        xaxis=dict(title=f"Pourcent of GC", range=[0, 100]),
-        yaxis=dict(title="Sequence number"),
-    )
-    fig = Figure(plotdata, layout)
-    plot(fig)
-
 # TODO Try to plot on graph windows outside the 95e and the 5e percentil
 # * Data filtered before that
-
-# facultative functions =============================================
-
-
-def unit(window_size):  # I think it's OK
-    return f"{round_value(window_size)} {factor10_unit(window_size)}"
-
-
-def factor10_unit(window_size):  # I think it's OK
-    unit = ["b", "Kb", "Mb", "Gb", "Tb"]
-    log_value = int(log(window_size, 1000))
-    return unit[log_value]
-
-
-def round_value(window_size):  # I think it's OK
-    log_value = int(log(window_size, 1000))
-    numeric_value = round(window_size/1000**log_value, 2)
-    return numeric_value
-
-
-def extract_values(data):  # I think it's OK
-    seq_values, seq_names = [], []
-    for dat in data:
-        seq, name = dat
-        seq_values.append(seq)
-        seq_names.append(name)
-    return (seq_values, seq_names)

@@ -4,7 +4,7 @@
 import sys
 import logging
 
-from wiz.qc import gc, tools, bins, tetra
+from wiz.qc import gc, tools, bins, tetra, report
 
 
 def run(args):
@@ -12,24 +12,25 @@ def run(args):
     main function for wiz quality check (qc)
     """
     logger = logging.getLogger(__name__)
-    logger.info("wiz qc started !")
+    logger.debug("[START] wiz qc")
 
     try:
-        gc_per_bin = []
-        logger.info(f"genome: {args.genome}")
-        bin = bins.Bins(tools.genome_parser(args.genome))
-        bin.gc = gc.average_gc(bin.seq, truncate=True)
-        bin.tetra = tetra.tetranuc_count(bin.seq)
-        bin.gc = gc.percentil_filter(bin.gc)
-        gc.scatter_gc(bin.gc)
-        gc.distplot_gc(bin.gc)
+        logger.debug(f"genome: {args.genome}")
+        genomes = tools.genome_parser(args.genome)
+        for gen in genomes:
+            bin = bins.Bins(gen)
+            bin.gc = gc.average_gc(bin.seq, truncate=True)
+            bin.tetra = tetra.tetranuc_count(bin.seq)
+            bin.gc = gc.percentil_filter(bin.gc)
+            report.scatter_gc(bin.gc)
+            report.distplot_gc(bin.gc)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)
         sys.exit(1)
     except KeyboardInterrupt:
         logger.error("something bad happened ?")
-        logger.error("You cancelled the operation.")
+        logger.error("You cancelled the operations.")
     else:
         logger.info("wiz qc finished. Goodbye.")
 
