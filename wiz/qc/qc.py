@@ -17,12 +17,12 @@ def run(args):
     try:
         gc_per_bin = []
         logger.info(f"genome: {args.genome}")
-        seq = bins.Bins(tools.genome_parser(args.genome))
-        seq.gc = gc.average_gc(seq.seq, truncate=True)
-        seq.tetra = tetra.tetranuc_count(seq.seq)
-        gc.scatter_gc(seq.gc)
-        gc.distplot_gc(seq.gc)
-        gc.histogram_gc(seq.gc)
+        bin = bins.Bins(tools.genome_parser(args.genome))
+        bin.gc = gc.average_gc(bin.seq, truncate=True)
+        bin.tetra = tetra.tetranuc_count(bin.seq)
+        bin.gc = gc.percentil_filter(bin.gc)
+        gc.scatter_gc(bin.gc)
+        gc.distplot_gc(bin.gc)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)

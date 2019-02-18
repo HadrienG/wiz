@@ -47,13 +47,12 @@ def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
         return average
 
 
-def percentil95(average, percent=95):  # WIP need testing
-    P95 = percentile(average, percent/100)
-    outbounded_index = []
+def percentil_filter(average, percent=[5, 95]):  # WIP need testing
+    P5, P95 = percentile(average, percent[0]), percentile(average, percent[1])
     for value in average:
-        if value > P95:
-            outbounded_index.append(average.index(value))
-    return outbounded_index
+        if value > P95 or value < P5:
+            average.pop(average.index(value))
+    return average
 
 # Graph functions
 
@@ -89,7 +88,7 @@ def scatter_gc(data, window_size=5000):  # waiting a test
     for seq, name in zip(seq_values, seq_names):
         position = [i*window_size for i in range(0, len(seq))]
         plotdata.append(Scatter(x=position, y=seq, name=name))
-    layout = Layout( # * Try to change scatter in plot or bar
+    layout = Layout(  # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
         xaxis=dict(title=f"Pourcent of GC", range=[0, 100]),
         yaxis=dict(title="Sequence number"),
@@ -97,7 +96,8 @@ def scatter_gc(data, window_size=5000):  # waiting a test
     fig = Figure(plotdata, layout)
     plot(fig)
 
-# TODO Try to plot on graph windows outside the 95e percentil
+# TODO Try to plot on graph windows outside the 95e and the 5e percentil
+# * Data filtered before that
 
 # facultative functions =============================================
 
