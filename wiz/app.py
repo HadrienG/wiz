@@ -95,7 +95,8 @@ def main():
         type=str,
         metavar="",
         help="input the folder of genome bin in fasta format",
-        required=True
+        required=True,
+        nargs='+'
     )
     parser_qc.add_argument(
         "-o",

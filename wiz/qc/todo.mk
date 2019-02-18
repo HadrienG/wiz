@@ -23,8 +23,9 @@ None
 ## file tools.py :
 	[X] bugs when we import file 
 	* [X] try to import file by file
-	* [ ] \-> try to import group of files # ! Bug here 
+	* [X] \-> try to import group of files # * OK >> Bug here 
 	* [X] \-> try to import folder of files # * OK >> Bug when we import a folder with a unique file
+	* [ ] \-> check if a gen is not already loaded
 
 ## file report.py 
 [ ] Make repport in HTML with jinja2

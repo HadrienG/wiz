@@ -15,8 +15,12 @@ def run(args):
     logger.debug("[START] wiz qc")
 
     try:
-        logger.debug(f"genome: {args.genome}")
-        genomes = tools.genome_parser(args.genome)
+        genomes = []
+        logger.debug("Start import")
+        for gen in args.genome:
+            logger.debug(f"genome file: {gen}")
+            genomes.append(tools.genome_parser(gen))
+        logger.debug("Import ok")
         for gen in genomes:
             bin = bins.Bins(gen)
             bin.gc = gc.average_gc(bin.seq, truncate=True)
