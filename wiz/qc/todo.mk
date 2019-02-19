@@ -7,8 +7,8 @@ None
 
 
 ## file qc.py :
-[X] fixing genome importing file tools.py
-[ ] adding some parameters
+	[X] fixing genome importing file tools.py
+	[ ] adding some parameters
 
 
 ## file gc.py :
@@ -33,5 +33,8 @@ None
 	### Distplot graph
 	* [ ] Adding information about gc distplot graph
 	* [ ] Fixing the range of the yaxis 
+	* [X] Fixing ploting bug
 	### scatterplot graph
-	* [ ] Changing scatterplot graph in plot graph
+	* [X] Changing scatterplot graph in plot graph
+	### tetraplot graph
+	* [ ] Make a barchart with proportion in each tetranuc

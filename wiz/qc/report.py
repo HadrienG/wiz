@@ -10,31 +10,44 @@ from plotly.graph_objs import Histogram, Figure, Layout, Scatter
 logger = logging.getLogger(__name__)
 
 
+class Report:
+    def __init__(self, bins):
+        self.gc_scatter_plot = scatter_gc(bins)
+        self.gc_distplot = "" #distplot_gc(bins)
+        self.tetra_distribution = ""
+
+    # def __repr__(self):
+    #     return self.gc_scatter_plot + self.gc_distplot
+
+
 def scatter_gc(data, window_size=5000):  # waiting a test
     seq_values, seq_names, bounds = extract_values(data)
     plotdata = []
-    for seq, name,bound in zip(seq_values, seq_names, bounds):
+    for seq, name, bound in zip(seq_values, seq_names, bounds):
         position = [i*window_size for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=seq, name=name, mode='markers'))
+        plotdata.append(Scatter(x=position, y=seq, name=name, mode='markers', marker=dict(size=3)))
         y_down = [bound[0] for i in range(0, len(seq))]
         y_up = [bound[1] for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=y_down, name=name+" bounds_DOWN", mode='markers'))
-        plotdata.append(Scatter(x=position, y=y_up, name=name+" bounds_UP", mode='markers'))
-    for bound in bounds:
-        position = [i*window_size for i in range(0, len(seq))]
-        
+        plotdata.append(Scatter(x=position, y=y_down, name=name+" bounds_DOWN", mode='lines', line=dict(width=1)))
+        plotdata.append(Scatter(x=position, y=y_up, name=name+" bounds_UP", mode='markers', marker=dict(symbol='hash-dot')))
     layout = Layout(  # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
-        xaxis=dict(title=f"Pourcent of GC"),
-        yaxis=dict(title="Sequence number", range=[0, 100]))
+        xaxis=dict(title="Position in the sequence"),
+        yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    plot(fig)
+    return plot(fig, include_plotlyjs=True, output_type='div')
 
 
 def distplot_gc(data):  # waiting a test
-    seq_values, seq_names = extract_values(data)
+    seq_values, seq_names, _ = extract_values(data)
     fig = distplot(seq_values, seq_names)
-    plot(fig)
+    fig['layout'].update(
+        title="Reads ratio per GC average",
+        xaxis=dict(title="Average of GC"),
+        yaxis=dict(title="Relative amount of reads", range=[0, 1])
+    )
+    #plot(fig, include_plotlyjs=True, output_type='div')
+    plot(fig) # just here to help in the dev of this function
 # TODO comment the displot graph
 
 

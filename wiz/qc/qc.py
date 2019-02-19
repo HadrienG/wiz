@@ -34,7 +34,7 @@ def run(args):
             bin.gc = gc.average_gc(bin.seq, truncate=True)
             bin.gc, bin.gc_bounds = gc.percentil_filter(bin.gc)
             bin.tetra = tetra.tetranuc_count(bin.seq)
-        report.scatter_gc(bins_list)
+        report_data = report.Report(bins_list)
         report.distplot_gc(bins_list)
     except ValueError as Ve:
         logger.error("something bad happened")
