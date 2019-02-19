@@ -28,13 +28,14 @@ def run(args):
             logger.debug(f"gen : {gen}")
             bin = bins.Bins(gen)
             bins_list.append(bin)
+        del genomes
         bins_list = tools.check_for_duplicates(bins_list)
         for bin in bins_list:
             bin.gc = gc.average_gc(bin.seq, truncate=True)
+            bin.gc, bin.gc_bounds = gc.percentil_filter(bin.gc)
             bin.tetra = tetra.tetranuc_count(bin.seq)
-            bin.gc = gc.percentil_filter(bin.gc)
-            report.scatter_gc(bin.gc)
-            report.distplot_gc(bin.gc)
+        report.scatter_gc(bins_list)
+        report.distplot_gc(bins_list)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)

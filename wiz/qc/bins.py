@@ -9,6 +9,7 @@ class Bins:
         self.name = seq.name
         self.gc = []
         self.tetra = []
+        self.gc_bounds = []
 
 
 # TODO Validating the class

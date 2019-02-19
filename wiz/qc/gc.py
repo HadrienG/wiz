@@ -4,7 +4,8 @@
 
 from Bio.SeqUtils import GC
 from numpy import percentile
-
+import logging
+logger = logging.getLogger(__name__)
 
 def check_window_size(sequence, window_size):       # I think it's OK
     if len(sequence) == 0:
@@ -46,10 +47,12 @@ def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
 
 def percentil_filter(average, percent=[5, 95]):  # WIP need testing
     P5, P95 = percentile(average, percent[0]), percentile(average, percent[1])
+    logger.debug(f"P5 : {P5} ; P95 : {P95}")
+    filtered_average = []
     for value in average:
-        if value > P95 or value < P5:
-            average.pop(average.index(value))
-    return average
+        if value < P95 and value > P5:
+            filtered_average.append(value)
+    return filtered_average, [P5, P95]
 
 # TODO Try to plot on graph windows outside the 95e and the 5e percentil
 # * Data filtered before that

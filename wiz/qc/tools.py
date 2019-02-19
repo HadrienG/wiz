@@ -98,7 +98,7 @@ def check_for_duplicates(duplicates_list):
         \t[A]utomatically filter (default)
         \t[M]anually filter
         =>\t""").lower()
-        if rep == "d" :
+        if rep == "d":
             logger.info("ignored filtration")
             return duplicates_list
         elif rep == "m":
