@@ -16,13 +16,20 @@ def run(args):
 
     try:
         genomes = []
-        logger.debug("Start import")
+        logger.debug("[START] import")
         for gen in args.genome:
             logger.debug(f"genome file: {gen}")
-            genomes.append(tools.genome_parser(gen))
-        logger.debug("Import ok")
+            genomes += (tools.genome_parser(gen))
+        logger.debug("[STOP] import")
+        logger.debug("[START] Reading genome imported")
+        logger.debug(genomes)
+        bins_list = []
         for gen in genomes:
+            logger.debug(f"gen : {gen}")
             bin = bins.Bins(gen)
+            bins_list.append(bin)
+        bins_list = tools.check_for_duplicates(bins_list)
+        for bin in bins_list:
             bin.gc = gc.average_gc(bin.seq, truncate=True)
             bin.tetra = tetra.tetranuc_count(bin.seq)
             bin.gc = gc.percentil_filter(bin.gc)
