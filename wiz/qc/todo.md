@@ -33,15 +33,15 @@ None
 	* [X] \-> check if a gen is not already loaded # * OK
 	* [ ] \-> Check if file is fasta file # ! important way to not crash the code
 
-## file report.py 
+## file report.py :
 [ ] Make repport in HTML with jinja2
-	### Distplot graph
+	### Distplot graph :
 	* [X] Adding information about gc distplot graph
 	* [X] Fixing the range of the yaxis 
 	* [X] Fixing ploting bug
-	### scatterplot graph
+	### scatterplot graph :
 	* [X] Changing scatterplot graph in plot graph
-	### tetraplot graph
+	### tetraplot graph :
 	* [ ] Make a barchart with proportion in each tetranuc
 	* [ ] Make a chart with relative proportion for each tetranucl for each contig
 
