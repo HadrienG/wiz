@@ -1,4 +1,4 @@
-#todo for folder qc
+# todo for folder qc
 	*[X] Moving graph function into a report.py file
 	*[ ] Create branch tetra to develop the tetra module
 
