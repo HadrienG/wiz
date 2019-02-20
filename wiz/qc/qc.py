@@ -36,6 +36,7 @@ def run(args):
                 bin.gc_filtered = gc.percentil_filter(bin.gc, bin.gc_percentil)
                 bin.gc_bounds = gc.get_bounds(bin.gc, bin.gc_percentil)
                 bin.tetra = tetra.tetranuc_count(bin.seq)
+                print(bin.tetra)
             report_data = report.Report(bins_list, args.window)
     except ValueError as Ve:
         logger.error("something bad happened")

@@ -14,6 +14,9 @@ def tetranuc_count(sequence):
         else:
             tetra_dic[buffer] = 1
         buffer = str(buffer[1:])
+    key_list = [key for key in tetra_dic.keys()]
+    for key in key_list:
+        tetra_dic[key] = (tetra_dic[key]/total_count)
     return tetra_dic
 
 
