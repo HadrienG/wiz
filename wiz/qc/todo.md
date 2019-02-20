@@ -16,7 +16,7 @@ None
 
 
 ## file gc.py :
-	### extract_value
+	### extract_value ###
 	[X] Fix the new bug to extract_value
 	[X] Fix the filtering function
 
