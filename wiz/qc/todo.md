@@ -22,8 +22,8 @@ None
 
 
 ## file tetra.py :
-* [ ] Give relative tetra distribution
-* [ ] Search metric with euclidian or Manathan distant between some contigs
+* [X] Give relative tetra distribution
+* [ ] calculate metric with euclidian or Manathan distant between some contigs
 
 ## file tools.py :
 * [X] bugs when we import file 

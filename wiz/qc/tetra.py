@@ -22,3 +22,12 @@ def tetranuc_count(sequence):
 
 # * It's ok here
 # TODO Make dataframe with the values returned
+def tetra_euclidian_distance(seq1 = {},seq2 = {}):
+    dimensions=[key for key in seq1.keys()]
+    for key in seq2.keys():
+        if key not in dimensions:
+            dimensions.append(key)
+    for dim in dimensions:
+        val_seq1, val_seq2 = 0, 0
+        if seq1.has_key(dim):
+            val_seq1 = seq1[dim]
