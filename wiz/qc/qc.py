@@ -37,7 +37,6 @@ def run(args):
                 bin.gc_bounds = gc.get_bounds(bin.gc, bin.gc_percentil)
                 bin.tetra = tetra.tetranuc_count(bin.seq)
             report_data = report.Report(bins_list, args.window)
-            report.distplot_gc(bins_list)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)

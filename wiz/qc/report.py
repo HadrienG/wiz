@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Report:
     def __init__(self, bins, window):
         self.gc_scatter_plot = scatter_gc(bins, window)
-        self.gc_distplot = ""  # distplot_gc(bins)
+        self.gc_distplot = distplot_gc(bins)
         self.tetra_distribution = ""
 
     # def __repr__(self):
@@ -35,20 +35,20 @@ def scatter_gc(data, window_size):  # waiting a test
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    plot(fig)
-    # return plot(fig, include_plotlyjs=True, output_type='div')
+    #  plot(fig)
+    return plot(fig, include_plotlyjs=True, output_type='div')
 
 
 def distplot_gc(data):  # waiting a test
-    seq_values, seq_names, _,_ = extract_values(data)
+    seq_values, seq_names, _, _ = extract_values(data)
     fig = distplot(seq_values, seq_names)
     fig['layout'].update(
         title="Reads ratio per GC average",
         xaxis=dict(title="Average of GC"),
         yaxis=dict(title="Relative amount of reads", range=[0, 1])
     )
-    # return plot(fig, include_plotlyjs=True, output_type='div')
-    plot(fig)  # just here to help in the dev of this function
+    #  plot(fig)  # just here to help in the dev of this function
+    return plot(fig, include_plotlyjs=True, output_type='div')
 # TODO comment the displot graph
 
 
