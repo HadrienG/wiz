@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def genome_parser(pathfiles, format="fasta"):
+def genome_parser(pathfiles, auto_import_folder=False, format="fasta"):
     """Checks the supplied paths and calls reads retrieval or folder open functions"""
     logger.debug("[START] genome_parser")
     reads = []
@@ -19,7 +19,9 @@ def genome_parser(pathfiles, format="fasta"):
         reads += file_reader(genpath, format)
     elif os.path.isdir(genpath):
         logger.debug("genome_parser : folder detected")
-        reads += folder_reader(genpath, format)
+        freads = folder_reader(genpath, format, auto_import_folder)
+        if freads != 0:
+            reads += freads
     else:
         raise ValueError("File not found")
     logger.debug("[STOP] genome_parser")
@@ -37,7 +39,7 @@ def file_reader(file_path, format):
         return reads
 
 
-def folder_reader(folder_path, format):
+def folder_reader(folder_path, format, auto_import_folder):
     """List the files in the folders and propose their extractions"""
     logger.debug("[START] folder_reader")
     file_list = os.listdir(folder_path)
@@ -49,13 +51,16 @@ def folder_reader(folder_path, format):
     file_list = list(file_list_temps)
     del(file_list_temps)
     folder_name = os.path.split(folder_path)[1]
-    logger.warn("The provided path points to a folder.")
+    logger.error("The provided path points to a folder.")
     if len(file_list) != 0:
-        if len(file_list) == 1:
-            end_string = "only one file"
-        else:
-            end_string = f"these {len(file_list)} files"
-        rep = input(f"Do you want to open the folder '{folder_name}' with {end_string} ? [y/N]")
+        if auto_import_folder:
+            rep = "y"
+        else: 
+            if len(file_list) == 1:
+                end_string = "only one file"
+            else:
+                end_string = f"these {len(file_list)} files"
+            rep = input(f"Do you want to open the folder '{folder_name}' with {end_string} ? [y/N]")
         if rep == "y":
             reads = []
             logger.debug(f"lengt of file list : {len(file_list)}")
@@ -70,17 +75,17 @@ def folder_reader(folder_path, format):
             logger.debug(f"Folder_reader : reads => {reads}")
             return reads
         else:
-            logger.warning("Interrupted operations")
+            logger.error("Interrupted operations")
             logger.debug("[STOP] folder_reader")
             exit(0)
     else:
-        logger.warning(f"The folder '{folder_name}' is empty")
+        logger.error(f"The folder '{folder_name}' is empty")
         logger.debug("[STOP] folder_reader")
-        exit(0)
+        return 0
 # * OK >> TODO Permit the import of folder
 
 
-def check_for_duplicates(duplicates_list):
+def check_for_duplicates(duplicates_list, auto_filter):
     """Checks based on IDs if duplicates are present"""
     id_list = []
     duplicates_founded = False
@@ -93,21 +98,22 @@ def check_for_duplicates(duplicates_list):
             bins_duplicated.append(bin.id)
     if duplicates_founded:
         logger.warning("Duplicated bins founded:")
-        rep = input("""Do you want :
-        \t[D]o nothing
-        \t[A]utomatically filter (default)
-        \t[M]anually filter
-        =>\t""").lower()
-        if rep == "d":
-            logger.info("ignored filtration")
-            return duplicates_list
-        elif rep == "m":
-            return manually_filter(duplicates_list, bins_duplicated)
-        else:
-            if not (rep == "a" or rep == ""):
-                logger.warn(f"'{rep}' is a bad value ! The default option is used")
+        if auto_filter:
             logger.info("automatic filtration")
             return automatic_filter(duplicates_list)
+        else:
+            rep = input("""Do you want :
+            \t[D]o nothing
+            \t[A]utomatically filter (default)
+            =>\t""").lower()
+            if rep == "d":
+                logger.info("ignored filtration")
+                return duplicates_list
+            else:
+                if not (rep == "a" or rep == ""):
+                    logger.warn(f"'{rep}' is a bad value ! The default option is used")
+                logger.info("automatic filtration")
+                return automatic_filter(duplicates_list)
     else:
         return duplicates_list
 
@@ -121,18 +127,3 @@ def automatic_filter(list_bins):
             id_list.append(bin.id)
             filtered_list.append(bin)
     return filtered_list
-
-
-def manually_filter(list_bins, bins_duplicated):
-    logger.warning("Manual filtration")
-    logger.info(f"{len(list_bins)} bin involved")
-    list_bins.reverse()
-    pos_bin = [bin.id for bin in list_bins]
-    for dupl in bins_duplicated:
-        rep = input(f"{dupl} : keep ? [y/N]").lower()
-        if not rep == "y":
-            list_bins.pop(pos_bin.index(dupl))
-            pos_bin.pop(pos_bin.index(dupl))
-            logger.info(f"{dupl} removed")
-    list_bins.reverse()
-    return list_bins

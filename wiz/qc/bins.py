@@ -10,6 +10,8 @@ class Bins:
         self.gc = []
         self.tetra = []
         self.gc_bounds = []
+        self.gc_filtered = []
+        self.gc_percentil = [5, 95]
 
 
 # TODO Validating the class

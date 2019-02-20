@@ -4,9 +4,11 @@
 
 def tetranuc_count(sequence):
     tetra_dic = {}
+    total_count = 0
     buffer = str(sequence[:3])
     for nucl in sequence[3:]:
         buffer += str(nucl)
+        total_count +=1
         if buffer in tetra_dic.keys():
             tetra_dic[buffer] += 1
         else:

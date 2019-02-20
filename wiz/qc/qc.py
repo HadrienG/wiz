@@ -16,26 +16,28 @@ def run(args):
 
     try:
         genomes = []
-        logger.debug("[START] import")
         for gen in args.genome:
             logger.debug(f"genome file: {gen}")
-            genomes += (tools.genome_parser(gen))
-        logger.debug("[STOP] import")
-        logger.debug("[START] Reading genome imported")
-        logger.debug(genomes)
+            genomes += (tools.genome_parser(gen, auto_import_folder=args.folder))
         bins_list = []
-        for gen in genomes:
-            logger.debug(f"gen : {gen}")
-            bin = bins.Bins(gen)
-            bins_list.append(bin)
-        del genomes
-        bins_list = tools.check_for_duplicates(bins_list)
-        for bin in bins_list:
-            bin.gc = gc.average_gc(bin.seq, truncate=True)
-            bin.gc, bin.gc_bounds = gc.percentil_filter(bin.gc)
-            bin.tetra = tetra.tetranuc_count(bin.seq)
-        report_data = report.Report(bins_list)
-        report.distplot_gc(bins_list)
+        if len(genomes) == 0:
+            logger.error("No sequence provided")
+            exit(2)
+        else:
+            for gen in genomes:
+                logger.debug(f"gen : {gen}")
+                bin = bins.Bins(gen)
+                bins_list.append(bin)
+            del genomes
+            if not args.ignorefilter:
+                bins_list = tools.check_for_duplicates(bins_list, args.autofilter)
+            for bin in bins_list:
+                bin.gc = gc.average_gc(bin.seq, window_size=args.window, truncate=True)
+                bin.gc_filtered = gc.percentil_filter(bin.gc, bin.gc_percentil)
+                bin.gc_bounds = gc.get_bounds(bin.gc, bin.gc_percentil)
+                bin.tetra = tetra.tetranuc_count(bin.seq)
+            report_data = report.Report(bins_list, args.window)
+            report.distplot_gc(bins_list)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)

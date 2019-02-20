@@ -11,53 +11,55 @@ logger = logging.getLogger(__name__)
 
 
 class Report:
-    def __init__(self, bins):
-        self.gc_scatter_plot = scatter_gc(bins)
-        self.gc_distplot = "" #distplot_gc(bins)
+    def __init__(self, bins, window):
+        self.gc_scatter_plot = scatter_gc(bins, window)
+        self.gc_distplot = ""  # distplot_gc(bins)
         self.tetra_distribution = ""
 
     # def __repr__(self):
     #     return self.gc_scatter_plot + self.gc_distplot
 
 
-def scatter_gc(data, window_size=5000):  # waiting a test
-    seq_values, seq_names, bounds = extract_values(data)
+def scatter_gc(data, window_size):  # waiting a test
+    seq_values, seq_names, seq_bounds, seq_percentil = extract_values(data)
     plotdata = []
-    for seq, name, bound in zip(seq_values, seq_names, bounds):
+    for seq, name, bound, percentil in zip(seq_values, seq_names, seq_bounds, seq_percentil):
         position = [i*window_size for i in range(0, len(seq))]
         plotdata.append(Scatter(x=position, y=seq, name=name, mode='markers', marker=dict(size=3)))
         y_down = [bound[0] for i in range(0, len(seq))]
         y_up = [bound[1] for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=y_down, name=name+" bounds_DOWN", mode='lines', line=dict(width=1)))
-        plotdata.append(Scatter(x=position, y=y_up, name=name+" bounds_UP", mode='markers', marker=dict(symbol='hash-dot')))
+        plotdata.append(Scatter(x=position, y=y_down, name=name+" "+str(percentil[0])+"e percentil", mode='lines', line=dict(width=1)))
+        plotdata.append(Scatter(x=position, y=y_up, name=name+" "+str(percentil[1])+"e percentil", mode='lines', line=dict(width=1)))
     layout = Layout(  # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    return plot(fig, include_plotlyjs=True, output_type='div')
+    plot(fig)
+    # return plot(fig, include_plotlyjs=True, output_type='div')
 
 
 def distplot_gc(data):  # waiting a test
-    seq_values, seq_names, _ = extract_values(data)
+    seq_values, seq_names, _,_ = extract_values(data)
     fig = distplot(seq_values, seq_names)
     fig['layout'].update(
         title="Reads ratio per GC average",
         xaxis=dict(title="Average of GC"),
         yaxis=dict(title="Relative amount of reads", range=[0, 1])
     )
-    #plot(fig, include_plotlyjs=True, output_type='div')
-    plot(fig) # just here to help in the dev of this function
+    # return plot(fig, include_plotlyjs=True, output_type='div')
+    plot(fig)  # just here to help in the dev of this function
 # TODO comment the displot graph
 
 
 def extract_values(data):  # I think it's OK
-    seq_values, seq_names, bounds = [], [], []
+    seq_values, seq_names, bounds, percentil = [], [], [], []
     for dat in data:
         seq_values.append(dat.gc)
         seq_names.append(dat.id)
         bounds.append(dat.gc_bounds)
-    return (seq_values, seq_names, bounds)
+        percentil.append(dat.gc_percentil)
+    return (seq_values, seq_names, bounds, percentil)
 
 
 def unit(window_size):  # I think it's OK

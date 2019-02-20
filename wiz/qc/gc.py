@@ -7,6 +7,7 @@ from numpy import percentile
 import logging
 logger = logging.getLogger(__name__)
 
+
 def check_window_size(sequence, window_size):       # I think it's OK
     if len(sequence) == 0:
         error = "The sequence is void."
@@ -23,7 +24,7 @@ def check_window_size(sequence, window_size):       # I think it's OK
     return True
 
 
-def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
+def average_gc(sequence, window_size, truncate=False):  # I think it's OK
     """
     Return a list with for each window of size window_size the average of GC.
     The last one windows can be more small that the others windows due of the
@@ -46,13 +47,20 @@ def average_gc(sequence, window_size=5000, truncate=False):  # I think it's OK
 
 
 def percentil_filter(average, percent=[5, 95]):  # WIP need testing
-    P5, P95 = percentile(average, percent[0]), percentile(average, percent[1])
+    P5, P95 = get_bounds(average, percent)
     logger.debug(f"P5 : {P5} ; P95 : {P95}")
     filtered_average = []
     for value in average:
         if value < P95 and value > P5:
             filtered_average.append(value)
-    return filtered_average, [P5, P95]
+    return filtered_average
+
+
+def get_bounds(sequence, percent=[5, 95]):
+    bound_1 = percentile(sequence, percent[0])
+    bound_2 = percentile(sequence, percent[1])
+    return bound_1, bound_2
+
 
 # TODO Try to plot on graph windows outside the 95e and the 5e percentil
 # * Data filtered before that

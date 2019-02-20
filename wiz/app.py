@@ -89,7 +89,7 @@ def main():
         default=False,
         help='Enable debug logging'
     )
-    parser_qc.add_argument(  #! TODO fix the bug with the path 
+    parser_qc.add_argument(
         "-g",
         "--genome",
         type=str,
@@ -106,6 +106,35 @@ def main():
         default="wiz_output",
         help=f"output directory"
     )
+    parser_qc.add_argument(
+        "-w",
+        "--window",
+        type=int,
+        metavar="",
+        default=5000,
+        help=f"Set the size of the sequence slicing window in GC content statistics"
+    )
+    parser_qc.add_argument(
+        "-f",
+        "--folder",
+        action='store_true',
+        help=f"Disables the folder import request if a folder is discovered and automatically imports it"
+    )
+    parser_qc_f = parser_qc.add_mutually_exclusive_group()
+    parser_qc_f.add_argument(
+        "-a",
+        "--autofilter",
+        action='store_true',
+        help=f"Enable auto deletion of contigs with the same ID"
+    )
+    parser_qc_f.add_argument(
+        "-i",
+        "--ignorefilter",
+        action='store_true',
+        help=f"Disable detection of contigs with the same ID"
+    )
+
+
     parser_qc.set_defaults(func=qc.run)
 
     args = parser.parse_args()
