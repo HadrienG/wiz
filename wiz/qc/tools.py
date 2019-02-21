@@ -98,6 +98,7 @@ def check_for_duplicates(duplicates_list, auto_filter):
             bins_duplicated.append(bin.id)
     if duplicates_founded:
         logger.warning("Duplicated bins founded:")
+        logger.warn(bins_duplicated)
         if auto_filter:
             logger.info("automatic filtration")
             return automatic_filter(duplicates_list)

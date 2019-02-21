@@ -32,12 +32,14 @@ def run(args):
             if not args.ignorefilter:
                 bins_list = tools.check_for_duplicates(bins_list, args.autofilter)
             for bin in bins_list:
-                bin.gc = gc.average_gc(bin.seq, window_size=args.window, truncate=True)
-                bin.gc_filtered = gc.percentil_filter(bin.gc, bin.gc_percentil)
-                bin.gc_bounds = gc.get_bounds(bin.gc, bin.gc_percentil)
+                #bin.gc = gc.average_gc(bin.seq, window_size=args.window, truncate=True)
+                #bin.gc_filtered = gc.percentil_filter(bin.gc, bin.gc_percentil)
+                #bin.gc_bounds = gc.get_bounds(bin.gc, bin.gc_percentil)
                 bin.tetra = tetra.tetranuc_count(bin.seq)
-                print(bin.tetra)
+                #print(bin.tetra)
             report_data = report.Report(bins_list, args.window)
+            report_data.tetra_distance = tetra.tetra_distance(bins_list)
+            report.table_tetra(bins_list,report_data.tetra_distance)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)
