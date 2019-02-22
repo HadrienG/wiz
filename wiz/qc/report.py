@@ -25,17 +25,20 @@ def scatter_gc(data, window_size):  # waiting a test
     plotdata = []
     for seq, name, bound, percentil in zip(seq_values, seq_names, seq_bounds, seq_percentil):
         position = [i*window_size for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=seq, name=name, mode='markers', marker=dict(size=3)))
+        plotdata.append(Scatter(x=position, y=seq, name=name,
+                                mode='markers', marker=dict(size=3)))
         y_down = [bound[0] for i in range(0, len(seq))]
         y_up = [bound[1] for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=y_down, name=name+" "+str(percentil[0])+"e percentil", mode='lines', line=dict(width=1)))
-        plotdata.append(Scatter(x=position, y=y_up, name=name+" "+str(percentil[1])+"e percentil", mode='lines', line=dict(width=1)))
+        plotdata.append(Scatter(x=position, y=y_down, name=name+" " +
+                                str(percentil[0])+"e percentil", mode='lines', line=dict(width=1)))
+        plotdata.append(Scatter(x=position, y=y_up, name=name+" " +
+                                str(percentil[1])+"e percentil", mode='lines', line=dict(width=1)))
     layout = Layout(  # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    #  plot(fig)
+    plot(fig)
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 

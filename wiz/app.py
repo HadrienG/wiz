@@ -91,10 +91,10 @@ def main():
     )
     parser_qc.add_argument(
         "-g",
-        "--genome",
+        "--genomes",
         type=str,
         metavar="",
-        help="input the folder of genome bin in fasta format",
+        help="input genomes in fasta format",
         required=True,
         nargs='+'
     )
@@ -112,19 +112,14 @@ def main():
         type=int,
         metavar="",
         default=5000,
-        help=f"Set the size of the sequence slicing window in GC content statistics"
-    )
-    parser_qc.add_argument(
-        "-f",
-        "--folder",
-        action='store_true',
-        help=f"Disables the folder import request if a folder is discovered and automatically imports it"
+        help=f"Size of slicing window for GC statistics"
     )
     parser_qc_f = parser_qc.add_mutually_exclusive_group()
     parser_qc_f.add_argument(
         "-a",
         "--autofilter",
         action='store_true',
+        default=True,
         help=f"Enable auto deletion of contigs with the same ID"
     )
     parser_qc_f.add_argument(
@@ -133,8 +128,6 @@ def main():
         action='store_true',
         help=f"Disable detection of contigs with the same ID"
     )
-
-
     parser_qc.set_defaults(func=qc.run)
 
     args = parser.parse_args()
@@ -160,7 +153,7 @@ def main():
         logger.debug(e)
         parser.print_help()
         logging.shutdown()
-        # raise  # extra traceback to uncomment for extra debugging powers
+        raise  # extra traceback to uncomment for extra debugging powers
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-class Bins:
+class Bin:
     def __init__(self, seq):
         self.id = seq.id
         self.seq = seq.seq
