@@ -42,9 +42,15 @@ def test_average_gc_by_frame_with_good_value():
 
 def test_average_gc_by_frame_with_bad_value():
     with pytest.raises(ValueError, message="The sequence is void"):
-        gc.average_gc(Seq("", IUPAC.unambiguous_dna))
+        gc.average_gc(Seq("", IUPAC.unambiguous_dna),10)
     with pytest.raises(ValueError, message="The size of the frame is negative or null."):
         gc.average_gc(Seq("RATSSATRRSSYTATATARRATYRAAAATY", IUPAC.unambiguous_dna), 0)
         gc.average_gc(Seq("RATSSATRRSSYTATATARRATYRAAAATY", IUPAC.unambiguous_dna), -10)
     with pytest.raises(ValueError, message="The size of the frame is superior of the sequence length."):
-        gc.average_gc(Seq("RATSSATRRSSYTATATARRATYRAAAATY", IUPAC.unambiguous_dna))
+        gc.average_gc(Seq("RATSSATRRSSYTATATARRATYRAAAATY", IUPAC.unambiguous_dna),5000)
+
+
+def test_percentil_filter():
+    values = [i for i in range(0,200)]
+    short_values = [i for i in range(10,190)]
+    assert gc.percentil_filter(values) == short_values
