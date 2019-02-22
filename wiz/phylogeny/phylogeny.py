@@ -21,6 +21,7 @@ def run(args):
     try:
         # create output dir
         path.create_dir(args.output)
+        path.create_dir(f"{args.output}/tmp", force=True)
 
         # download assemblies
         if args.clade:
@@ -53,6 +54,7 @@ def run(args):
         # run cd-hit
         # TODO: cd-hit takes only one file as input.
         # TODO RENAME AND CONCATENATE
+        # we'll rename for headers to be of the form >GCFxxxx_PROTID
         cd_hit(protein_files, output_dir=args.output)
 
     except OSError as e:

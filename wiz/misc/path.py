@@ -23,6 +23,7 @@ def create_dir(dir_name, force=False):
 
     Args:
         dir_name (str): name of the directory to create
+        force (bool): do not raise error if dir exists
 
     Returns:
         str: the absolute path of the created directory
@@ -34,6 +35,7 @@ def create_dir(dir_name, force=False):
     try:
         path = Path(dir_name)
         path.mkdir(parents=True, exist_ok=force)
+        logger.debug(f"created directory: {dir_name}")
         return path.absolute()
     except OSError as e:
         logger.debug(f"{dir_name} already exists")

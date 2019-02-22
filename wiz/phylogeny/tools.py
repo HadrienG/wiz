@@ -37,7 +37,7 @@ def cd_hit(proteins, output="clustered_proteins.faa", output_dir=None,
         "threads": 1
     }
     logger.info("Running cd-hit")
-    logger.warning(f"paths:{proteins}")
+    # logger.warning(f"paths:{proteins}")
     subprocess.run([cd_hit, "-i", input_files, "-o",
                     out_prot, "-d", "0", "-c", args["identity"],
                     "-n", args["word_length"]])
