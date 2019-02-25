@@ -128,3 +128,34 @@ def automatic_filter(list_bins):
             id_list.append(bin.id)
             filtered_list.append(bin)
     return filtered_list
+
+
+def check_window_size(sequence, window_size):       # I think it's OK
+    if len(sequence) == 0:
+        error = "The sequence is void."
+        raise ValueError(error)
+    if window_size < 0:
+        error = "The size of the window is negative."
+        raise ValueError(error)
+    if window_size == 0:
+        error = "The size of the window is null."
+        raise ValueError(error)
+    if window_size > len(sequence):
+        error = "The size of the window is superior of the sequence length."
+        raise ValueError(error)
+    return True
+
+
+def seq_spliter(seq, windows):
+    subseqs = []
+    if check_window_size(sequence, window_size):
+        average = []
+        seq_size = len(sequence)
+        for pos in range(0, seq_size, window_size):
+            if pos+window_size < seq_size:
+                subseq = sequence[pos:pos+window_size]
+            else:
+                if not truncate:
+                    subseq = sequence[pos:]
+            subseqs.append(subseq)
+    return subseqs

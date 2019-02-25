@@ -61,16 +61,16 @@ def table_tetra(bins, report):
             if id_col == id_row:
                 col_value.append(0)
             elif (id_col, id_row) in report.keys():
-                col_value.append(report[(id_col, id_row)]['manhattan'])
+                col_value.append(report[(id_col, id_row)])
             else:
-                col_value.append(report[(id_row, id_col)]['manhattan'])
+                col_value.append(report[(id_row, id_col)])
         cell_values.append(col_value)
     trace = Heatmap(
         z=cell_values,
         x=id,
         y=id,
         #colorscale=[[0,"#0CFF15"],[0.5,"#FFC900"],[1,"#700F00"]]
-        colorscale=[[0,"#7BCBF5"],[1,"#022A33"]]
+        colorscale=[[0,"#022A33"],[1,"#7BCBF5"]]
     )
     data = [trace]
     plot(data)

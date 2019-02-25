@@ -9,6 +9,7 @@ biopython = "*"
 tqdm = "*"
 plotly = "*"
 scipy = "*"
+joblib = "*"
 
 [dev-packages]
 pytest = "*"

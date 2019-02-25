@@ -74,3 +74,13 @@ time pipenv run wiz qc -g /stage/Shuffle_200 -w 500
     manhattan distance 18.257s   1st            17.294s
     chebyshev distance 18.972s   4st            
     minkowski distance 18.815s   2st
+
+metrics notes about the func tetra.tetranuc_count and tetra.tetranuc_count_list
+time pipenv run wiz qc -w 500 -g ../Shuffle_200 --debug
+time to run the 2 func in a unique run : 1m32.994
+                0                      : 0m01.187
+    tetra.tetranuc_count(bin.seq)      : 0m06.911  likeable approach
+    tetra.tetranuc_count_list(bin.seq) : 1m25.789  bad approach
+
+continuer l'implementation de tetra // 
+implementer subseqs dans les calc des tétras
