@@ -1,8 +1,12 @@
 # large files
 test_data
+clade_data
 
 # python stuff
 __pycache__
 
 # tests
 .coverage
+
+# mac stuff
+.DS_Store

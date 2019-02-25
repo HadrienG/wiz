@@ -7,11 +7,15 @@ name = "pypi"
 requests = "*"
 biopython = "*"
 tqdm = "*"
+plotly = "*"
+scipy = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
 codecov = "*"
+pep8 = "*"
+"autopep8" = "*"
 
 [requires]
 python_version = "3.7"
