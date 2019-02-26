@@ -23,7 +23,9 @@ None
 ## file tetra.py :
 * [X] Give relative tetra distribution
 * [X] calculate metric with euclidian or Manathan distant between some contigs (Chebyshev distance added to compare with the others)
-* [ ] Enable the choix of distance calculating method between two sequences (by parameter)
+* [ ] Enable the choice of distance calculating method between two sequences (by parameter)
+* [ ] implementing a multiprocessing method
+* [ ] cutting each sequence with tools.seq_splitter 
 
 
 ## file tools.py :
