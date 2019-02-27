@@ -26,7 +26,7 @@ def scatter_gc(data, window_size):  # waiting a test
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    #plot(fig)
+    plot(fig)
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 
@@ -38,7 +38,7 @@ def distplot_gc(data):  # waiting a test
         xaxis=dict(title="Average of GC"),
         yaxis=dict(title="Relative amount of reads", range=[0, 1])
     )
-    #plot(fig)  # just here to help in the dev of this function
+    #  plot(fig)  # just here to help in the dev of this function
     return plot(fig, include_plotlyjs=True, output_type='div')
 # TODO comment the displot graph
 

@@ -4,7 +4,6 @@ from os import cpu_count
 from multiprocessing import Pool
 
 import logging
-logger = logging.getLogger(__name__)
 
 
 def tetranuc_count(sequence):

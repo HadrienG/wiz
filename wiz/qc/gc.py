@@ -4,7 +4,9 @@
 
 from Bio.SeqUtils import GC
 from numpy import percentile
+
 from wiz.qc.tools import seq_spliter
+
 import logging
 logger = logging.getLogger(__name__)
 

@@ -6,6 +6,7 @@ import logging
 
 from wiz.qc import gc, tools, bins, tetra, report
 import timeit
+from Bio import SeqIO
 
 
 def run(args):
@@ -16,23 +17,26 @@ def run(args):
     logger.debug("[START] wiz qc")
 
     try:
-        genomes = []
-        for gen in args.genome:
-            logger.debug(f"genome file: {gen}")
-            genomes += (tools.genome_parser(gen, auto_import_folder=args.folder))
-        bins_list = []
-        if len(genomes) == 0:
-            logger.error("No sequence provided")
-            exit(2)
-        else:
-            for gen in genomes:
-                logger.debug(f"gen : {gen}")
-                bin = bins.Bins(gen, args.window)
-                bins_list.append(bin)
-            # del genomes
-            # if not args.ignorefilter:
-            #     bins_list = tools.check_for_duplicates(bins_list, args.autofilter)
-            report_data = report.Report(bins_list, args.window)
+        bins = []
+        for genome_file in args.genomes:
+            logger.debug(f"genome file: {genome_file}")
+            f = open(genome_file, 'r')
+            with f:
+                fasta_file = SeqIO.parse(f, 'fasta')
+                logger.info(f"Loading {genome_file}")
+                for record in fasta_file:
+                    genome_bin = Bin(record)
+                    bins.append(genome_bin)
+
+        for genome_bin in bins:
+            genome_bin.gc = gc.average_gc(
+                genome_bin.seq, window_size=args.window, truncate=True)
+            genome_bin.gc_filtered = gc.percentil_filter(
+                genome_bin.gc, genome_bin.gc_percentil)
+            genome_bin.gc_bounds = gc.get_bounds(
+                genome_bin.gc, genome_bin.gc_percentil)
+            genome_bin.tetra = tetra.tetranuc_count(genome_bin.seq)
+        report_data = report.Report(bins, args.window)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)
