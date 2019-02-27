@@ -4,10 +4,9 @@
 import sys
 import logging
 
+from wiz.qc import gc, tools, bins, tetra, report
+import timeit
 from Bio import SeqIO
-
-from wiz.qc.bin import Bin
-from wiz.qc import gc, tools, tetra, report
 
 
 def run(args):

@@ -128,6 +128,7 @@ def main():
         action='store_true',
         help=f"Disable detection of contigs with the same ID"
     )
+
     parser_qc.set_defaults(func=qc.run)
 
     args = parser.parse_args()
