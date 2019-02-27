@@ -6,18 +6,9 @@ from math import log
 from plotly.offline import plot
 from plotly.figure_factory import create_distplot as distplot
 from plotly.graph_objs import Histogram, Figure, Layout, Scatter, Heatmap
+from wiz.qc.tetra import distance_calculation
 
 logger = logging.getLogger(__name__)
-
-
-class Report:
-    def __init__(self, bins, window):
-        #self.gc_scatter_plot = scatter_gc(bins, window)
-        #self.gc_distplot = distplot_gc(bins)
-        self.tetra_distance = {}
-
-    # def __repr__(self):
-    #     return self.gc_scatter_plot + self.gc_distplot
 
 
 def scatter_gc(data, window_size):  # waiting a test
@@ -73,7 +64,8 @@ def table_tetra(bins, report):
         colorscale=[[0,"#022A33"],[1,"#7BCBF5"]]
     )
     data = [trace]
-    plot(data)
+    plot(data)  # dev line
+    return plot(data, include_plotlyjs=True, output_type='div')
 
 
 def extract_values(data):  # I think it's OK
@@ -102,3 +94,13 @@ def round_value(window_size):  # I think it's OK
     return numeric_value
 
 
+class Report:
+    def __init__(self, bins, window):
+        logger.info("Make a wonderful report for you")
+        # self.gc_scatter_plot = scatter_gc(bins, window)
+        # self.gc_distplot = distplot_gc(bins)
+        self.tetra_distance = distance_calculation(bins)
+        self.tetra_heatmap = table_tetra(bins, self.tetra_distance)
+
+    # def __repr__(self):
+    #     return self.gc_scatter_plot + self.gc_distplot

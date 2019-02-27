@@ -146,14 +146,14 @@ def check_window_size(sequence, window_size):       # I think it's OK
     return True
 
 
-def seq_spliter(seq, windows):
+def seq_spliter(sequence, window, truncate=True):
     subseqs = []
-    if check_window_size(sequence, window_size):
+    if check_window_size(sequence, window):
         average = []
         seq_size = len(sequence)
-        for pos in range(0, seq_size, window_size):
-            if pos+window_size < seq_size:
-                subseq = sequence[pos:pos+window_size]
+        for pos in range(0, seq_size, window):
+            if pos+window < seq_size:
+                subseq = sequence[pos:pos+window]
             else:
                 if not truncate:
                     subseq = sequence[pos:]

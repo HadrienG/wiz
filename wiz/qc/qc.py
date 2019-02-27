@@ -29,18 +29,10 @@ def run(args):
                 logger.debug(f"gen : {gen}")
                 bin = bins.Bins(gen, args.window)
                 bins_list.append(bin)
-            del genomes
-            if not args.ignorefilter:
-                bins_list = tools.check_for_duplicates(bins_list, args.autofilter)
-            for bin in bins_list:
-                bin.gc = gc.average_gc(bin.subseqs, truncate=True)
-                #bin.gc_filtered = gc.percentil_filter(bin.gc, bin.gc_percentil)
-                #bin.gc_bounds = gc.get_bounds(bin.gc, bin.gc_percentil)
-                bin.tetra = tetra.tetranuc_count(bin.seq)
-                #print(bin.tetra)
+            # del genomes
+            # if not args.ignorefilter:
+            #     bins_list = tools.check_for_duplicates(bins_list, args.autofilter)
             report_data = report.Report(bins_list, args.window)
-            report_data.tetra_distance = tetra.distance_calculation(bins_list)
-            report.table_tetra(bins_list,report_data.tetra_distance)
     except ValueError as Ve:
         logger.error("something bad happened")
         logger.error(Ve)

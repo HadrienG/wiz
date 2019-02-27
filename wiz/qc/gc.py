@@ -4,7 +4,7 @@
 
 from Bio.SeqUtils import GC
 from numpy import percentile
-from tools import seq_spliter
+from wiz.qc.tools import seq_spliter
 import logging
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ def average_gc(subseqs, truncate=False):  # I think it's OK
     sequence length. The result of the window of length inferior at window_size
     can be removed with the parameter truncate=True
     """
+    average = []
     for subseq in subseqs:
         average.append(GC(subseq))
     return average

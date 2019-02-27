@@ -84,5 +84,8 @@ time to run the 2 func in a unique run : 1m32.994
     tetra.tetranuc_count(bin.seq)      : 0m06.911  likeable approach
     tetra.tetranuc_count_list(bin.seq) : 1m25.789  bad approach
 
-continuer l'implementation de tetra // 
-implementer subseqs dans les calc des tétras
+metrics notes about the func tetra.distance_calculation and tetra.distance_MPcalculation
+time pipenv run wiz qc -w 500 -g ../Shuffle_200 --debug
+                            real        user
+distance_MPcalculation      0m11s260    0m34s923
+distance_calculation        0m24s586    0m24s595
