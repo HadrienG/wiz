@@ -7,6 +7,9 @@ from plotly.offline import plot
 from plotly.figure_factory import create_distplot as distplot
 from plotly.graph_objs import Histogram, Figure, Layout, Scatter, Heatmap
 from wiz.qc.tetra import distance_calculation
+from jinja2 import Environment, FileSystemLoader
+import os
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,19 +17,25 @@ logger = logging.getLogger(__name__)
 def scatter_gc(data, window_size):  # waiting a test
     seq_values, seq_names, seq_bounds, seq_percentil = extract_values(data)
     plotdata = []
-    for seq, name, bound, percentil in zip(seq_values, seq_names, seq_bounds, seq_percentil):
+    for seq, name, bound, percentil in zip(
+            seq_values, seq_names, seq_bounds, seq_percentil):
         position = [i*window_size for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=seq, name=name, mode='markers', marker=dict(size=3)))
+        plotdata.append(Scatter(x=position, y=seq, name=name,
+            mode='markers', marker=dict(size=3)))
         y_down = [bound[0] for i in range(0, len(seq))]
         y_up = [bound[1] for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=y_down, name=name+" "+str(percentil[0])+"e percentil", mode='lines', line=dict(width=1), opacity=0.25))
-        plotdata.append(Scatter(x=position, y=y_up, name=name+" "+str(percentil[1])+"e percentil", mode='lines', line=dict(width=1), opacity=0.25))
+        plotdata.append(Scatter(x=position, y=y_down,
+            name=name+" "+str(percentil[0])+"e percentil",
+            mode='lines', line=dict(width=1), opacity=0.25))
+        plotdata.append(Scatter(x=position, y=y_up,
+            name=name+" "+str(percentil[1])+"e percentil", mode='lines',
+            line=dict(width=1), opacity=0.25))
     layout = Layout(  # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    plot(fig)
+    #plot(fig)
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 
@@ -38,7 +47,7 @@ def distplot_gc(data):  # waiting a test
         xaxis=dict(title="Average of GC"),
         yaxis=dict(title="Relative amount of reads", range=[0, 1])
     )
-    #  plot(fig)  # just here to help in the dev of this function
+    #plot(fig)  # just here to help in the dev of this function
     return plot(fig, include_plotlyjs=True, output_type='div')
 # TODO comment the displot graph
 
@@ -60,11 +69,11 @@ def table_tetra(bins, report):
         z=cell_values,
         x=id,
         y=id,
-        #colorscale=[[0,"#0CFF15"],[0.5,"#FFC900"],[1,"#700F00"]]
-        colorscale=[[0,"#022A33"],[1,"#7BCBF5"]]
+        # colorscale=[[0,"#0CFF15"],[0.5,"#FFC900"],[1,"#700F00"]]
+        colorscale=[[0, "#022A33"], [1, "#7BCBF5"]]
     )
     data = [trace]
-    plot(data)  # dev line
+    #plot(data)  # dev line
     return plot(data, include_plotlyjs=True, output_type='div')
 
 
@@ -97,10 +106,22 @@ def round_value(window_size):  # I think it's OK
 class Report:
     def __init__(self, bins, window):
         logger.info("Make a wonderful report for you")
-        # self.gc_scatter_plot = scatter_gc(bins, window)
-        # self.gc_distplot = distplot_gc(bins)
+        self.gc_scatter_plot = scatter_gc(bins, window)
+        self.gc_distplot = distplot_gc(bins)
         self.tetra_distance = distance_calculation(bins)
         self.tetra_heatmap = table_tetra(bins, self.tetra_distance)
 
     # def __repr__(self):
     #     return self.gc_scatter_plot + self.gc_distplot
+
+
+def jinja_report(report_data):
+    file_loader = FileSystemLoader("wiz/misc/template", followlinks=True)
+    env = Environment(loader=file_loader)
+    template = env.get_template("report.html")
+    output = template.render(
+        day_date=time.localtime(),
+        average_gc=report_data.gc_scatter_plot,
+        gc_dist=report_data.gc_distplot,
+        tetra_heatmap=report_data.tetra_heatmap)
+    return output

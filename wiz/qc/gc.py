@@ -26,7 +26,7 @@ def average_gc(subseqs, truncate=False):  # I think it's OK
 
 def percentil_filter(average, percent=[5, 95]):  # WIP need testing
     P5, P95 = get_bounds(average, percent)
-    logger.debug(f"P5 : {P5} ; P95 : {P95}")
+    logger.debug(f"\t| P5 : {round(P5,3):>6} |\tP95 : {round(P95,3):>6}|")
     filtered_average = []
     for value in average:
         if value < P95 and value > P5:
