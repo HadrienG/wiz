@@ -14,7 +14,7 @@ def run(args):
     main function for wiz quality check (qc)
     """
     logger = logging.getLogger(__name__)
-    logger.debug("[START] wiz qc")
+    logger.debug(" [START] wiz qc")
 
     try:
         bins = []
@@ -30,17 +30,17 @@ def run(args):
 
         report_data = report.Report(bins, args.window)
         report_html = report.jinja_report(report_data)
-        with open(args.output, "w") as r:
-            r.writelines(report_html)
+        report.create_dir(args.output)
+        report.write_QCreport(args.output, report_html)
     except ValueError as Ve:
-        logger.error("something bad happened")
+        logger.error(" something bad happened")
         logger.error(Ve)
         sys.exit(1)
     except KeyboardInterrupt:
-        logger.error("something bad happened ?")
-        logger.error("You cancelled the operations.")
+        logger.error(" something bad happened ?")
+        logger.error(" You cancelled the operations.")
     else:
-        logger.info("wiz qc finished. Goodbye.")
+        logger.info(" wiz qc finished. Goodbye.")
 
 # TODO adding parameter
 # TODO converting genome parameter in genome folder
