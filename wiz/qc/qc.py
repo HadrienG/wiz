@@ -30,7 +30,7 @@ def run(args):
 
         report_data = report.Report(bins, args.window)
         report_html = report.jinja_report(report_data)
-        with open("temp_report.html","w") as r:
+        with open(args.output, "w") as r:
             r.writelines(report_html)
     except ValueError as Ve:
         logger.error("something bad happened")
