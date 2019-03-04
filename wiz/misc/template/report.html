@@ -5,17 +5,79 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Wiz Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <style>
+    body{
+    background-color: #ffffff;
+    font-family : Arial ;
+    }
+    #content{
+      padding-top:25px;
+      margin : 20px 10%;
+      width:75%;
+    }
+    h1, h2 {
+    height:40px;
+    color: #261822;
+    text-align : center;
+    font-family : Verdana ;
+    margin: 20px 5%;
+}
+.line {
+  height: 3px;
+  border-color: transparent;
+  background-image : linear-gradient(90deg ,transparent, #40152A, transparent) 
+}
+.box {
+  padding : 10px 10px;
+  color: #261822;
+  font-size: 20px ;
+  border-radius : 10px;
+  box-shadow : 5px 5px 3px grey;
+}
+.box .box-icon
+{
+  margin : 5px 5px;
+  color: #23B200;
+}
+.box .header
+{
+  height = 20px;
+  width = 100%;
+  background-color: #BCFFA0;
+}
+.box .box-line
+{
+  width : 5px;
+  background-color : #23B200;
+  float : left;
+}
+.box .box-text
+{
+  float : right;
+}
+    </style>
   </head>
   <body>
+  <div id="content">
     <h1>Wiz report</h1>
-  <h2>Quality check module</h2>
-  report generated on {{day_date}}
-  </hr><h3>Summary of the parameters used:</h3>
-  [The section is comming soon]
-  </hr><h3>Proportion of GC in sequences:</h3>
-  {{average_gc}}
-  {{gc_dist}}
-  </hr><h3>Tetranucleique distance heatmap beetwen sequences:</h3>
-  {{tetra_heatmap}}
+    <h2>Quality check module</h2>
+    <hr class="line">
+    <div class="box"> <div class="box-line"> </div><div class="box-text">
+      <span class="header">
+      <span class="box-icon"><i class='far fa-file-alt'></i></span><span class="title">report generated on :</span> </span>
+      </br><span class="box-content">{{day_date}}</span><div>
+      </div>
+      </hr>
+      <h3>Summary of the parameters used:</h3>
+        [The section is comming soon]
+      </hr>
+      <h3>Proportion of GC in sequences:</h3>
+        {{average_gc}}
+        {{gc_dist}}
+      </hr>
+      <h3>Tetranucleique distance heatmap beetwen sequences:</h3>
+        {{tetra_heatmap}}
+    </div>
   </body>
 </html>
