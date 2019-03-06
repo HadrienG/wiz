@@ -29,9 +29,9 @@ def run(args):
                     bins.append(genome_bin)
 
         report_data = report.Report(bins, args.window)
-        report_html = report.jinja_report(report_data)
+        report_html = report.jinja_report(report_data, args)
         report.create_dir(args.output)
-        report.write_QCreport(args.output, report_html)
+        report.write_QCreport(args, report_html)
     except ValueError as Ve:
         logger.error(" something bad happened")
         logger.error(Ve)

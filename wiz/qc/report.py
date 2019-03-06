@@ -145,6 +145,9 @@ def dendrogram_tetra(bins, report):
         "showticklabels": False,
         "ticks": ""
     }})
+    fig['layout'].update(
+        title="proximity between two sequences based on their composition tetra nucleic"
+    )
     # plot(fig)
     return plot(fig, include_plotlyjs=True, output_type='div')
     # ! need to fix xy name of sequence
@@ -176,12 +179,16 @@ def round_value(window_size):  # I think it's OK
     return numeric_value
 
 
-def jinja_report(report_data):
+def jinja_report(report_data, args):
     logger.info("Make a wonderful report for you")
     file_loader = FileSystemLoader("wiz/misc/template", followlinks=True)
     env = Environment(loader=file_loader)
     template = env.get_template("report.html")
     output = template.render(
+        param_filein=args.genomes,
+        param_fileout=args.output,
+        param_cpu = args.c,
+        param_window = args.window,
         day_date=time.asctime(),
         average_gc=report_data.gc_scatter_plot,
         gc_dist=report_data.gc_distplot,
@@ -199,8 +206,8 @@ def create_dir(path):
         logger.warning(" The files in it could have been overwritten!")
 
 
-def write_QCreport(path, report):
-    file_path = os.path.join(path, "QC_report.html")
+def write_QCreport(args, report):
+    file_path = os.path.join(args.output, "QC_report.html")
     with open(file_path, "w") as r:
         r.writelines(report)
     logger.info(" The QC report has been successfully written")

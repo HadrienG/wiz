@@ -119,7 +119,7 @@ def main():
         "-c",
         "-cpus",
         type=int,
-        default=os.cpu_count(),
+        default=(os.cpu_count()-1),
         help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})"
     )
     parser_qc_f = parser_qc.add_mutually_exclusive_group()
