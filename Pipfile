@@ -8,11 +8,17 @@ requests = "*"
 biopython = "*"
 tqdm = "*"
 requests-html = "*"
+plotly = "*"
+scipy = "*"
+joblib = "*"
+jinja2 = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
 codecov = "*"
+pep8 = "*"
+"autopep8" = "*"
 
 [requires]
 python_version = "3.7"
