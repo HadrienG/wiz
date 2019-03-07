@@ -1,9 +1,13 @@
+# editor config
+.vscode
+
 # large files
 test_data
 clade_data
 
 # python stuff
 __pycache__
+Pipfile.lock
 
 # tests
 .coverage
