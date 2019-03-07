@@ -6,6 +6,7 @@ import logging
 import argparse
 import os
 
+
 from wiz.qc import qc
 from wiz.misc import util
 from wiz.phylogeny import phylogeny
@@ -40,6 +41,8 @@ def main():
         description='phylogeny module',
         help='wiz: phylogeny module'
     )
+
+    parser_clade = parser_phylogeny.add_mutually_exclusive_group()
     parser_logging_p = parser_phylogeny.add_mutually_exclusive_group()
     parser_logging_p.add_argument(
         '--quiet',
@@ -54,11 +57,26 @@ def main():
         help='Enable debug logging'
     )
     parser_phylogeny.add_argument(
+        "-g",
+        "--genome",
+        type=str,
+        metavar="",
+        help="input genome bin in fasta format",
+        required=True
+    )
+    parser_clade.add_argument(
         "-c",
         "--clade",
         type=str,
         metavar="",
         help="clade used for phylogeny and pan-genome analysis"
+    )
+    parser_clade.add_argument(
+        "-d",
+        "--clade_dir",
+        type=str,
+        metavar="",
+        help="do not download a clade and use **.faa file in clade_dir instead"
     )
     parser_phylogeny.add_argument(
         "-o",
