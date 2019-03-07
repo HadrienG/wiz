@@ -24,8 +24,8 @@ None
 * [X] Give relative tetra distribution
 * [X] calculate metric with euclidian or Manathan distant between some contigs (Chebyshev distance added to compare with the others)
 * [ ] Enable the choice of distance calculating method between two sequences (by parameter)
-* [ ] implementing a multiprocessing method
-* [ ] cutting each sequence with tools.seq_splitter 
+* [X] implementing a multiprocessing method
+* [ ] adding args to enable choice of cpu nbr used in this module
 
 
 ## file tools.py :
@@ -45,11 +45,13 @@ None
 * [X] Fixing ploting bug
 ### scatterplot graph :
 * [X] Changing scatterplot graph in plot graph
-* [ ] make a group with each sequence bounds
+* [ ] make a colorgroup with each couple sequence bounds
+* [ ] mask name of bound in legend
 ### tetraplot graph :
 * [X] Make a heatmap with proportion in each tetranuc
-* [ ] Make a chart with relative proportion for each tetranucl for each contig # ! Amount of data too large to display numeric values
+* [X] Make a heatmap with relative proportion for each tetranucl for each contig # ! Amount of data too large to display numeric values
 * [ ] annotate the heatmap and specify the distance calculation method used
+* [ ] sort sequence with hclust method
 
 
 

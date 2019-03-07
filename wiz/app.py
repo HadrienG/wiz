@@ -4,6 +4,7 @@
 import sys
 import logging
 import argparse
+import os
 
 from wiz.qc import qc
 from wiz.misc import util
@@ -114,6 +115,13 @@ def main():
         default=5000,
         help=f"Size of slicing window for GC statistics"
     )
+    parser_qc.add_argument(
+        "-c",
+        "-cpus",
+        type=int,
+        default=(os.cpu_count()-1),
+        help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})"
+    )
     parser_qc_f = parser_qc.add_mutually_exclusive_group()
     parser_qc_f.add_argument(
         "-a",
@@ -128,6 +136,7 @@ def main():
         action='store_true',
         help=f"Disable detection of contigs with the same ID"
     )
+
 
     parser_qc.set_defaults(func=qc.run)
 
