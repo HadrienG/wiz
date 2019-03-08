@@ -8,7 +8,7 @@ import os
 
 
 from wiz.qc import qc
-from wiz.misc import util
+#from wiz.misc import util
 from wiz.phylogeny import phylogeny
 
 from wiz.version import __version__
