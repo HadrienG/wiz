@@ -15,3 +15,6 @@ Pipfile.lock
 
 # mac stuff
 .DS_Store
+
+# default output by wiz
+wiz_output/
