@@ -23,6 +23,9 @@ def average_gc(subseqs, truncate=False):  # I think it's OK
         average.append(GC(subseq))
     return average
 
+def average_gc_global(sequence):
+    return(GC(sequence))
+
 
 def percentil_filter(average, percent=[5, 95]):  # WIP need testing
     P5, P95 = get_bounds(average, percent)

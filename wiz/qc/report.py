@@ -42,6 +42,22 @@ def scatter_gc(data, window_size):  # waiting a test
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 
+def scatter_GC_coding_density(bins):
+    plotdata= []
+    debug=["name","coding density","GC global"]
+    logger.debug(f"{debug[0]:^20}|{debug[1]:^15}|{debug[2]:^15}")
+    for item in bins:
+        logger.debug(f"{item.name:^20}|{item.coding_density:^15}|{item.gc_global:^15}")
+        plotdata.append(Scatter(x=[item.coding_density], y=[item.gc_global],name=item.name, mode='markers'))
+    layout = Layout(
+        title="Coding density on global GC average",
+        xaxis=dict(title="coding density (%)", range=[0,100]),
+        yaxis=dict(title="Global GC average (%)", range=[0,100])
+    )
+    fig = Figure(plotdata, layout)
+    plot(fig)
+    return plot(fig, include_plotlyjs=True, output_type='div')
+
 def distplot_gc(data):  # waiting a test
     seq_values, seq_names, _, _ = extract_values(data)
     fig = distplot(seq_values, seq_names)
@@ -218,9 +234,9 @@ class Report:
         logger.info(" Develops sophisticated graphs for the report")
         self.gc_scatter_plot = scatter_gc(bins, window)
         self.tetra_distance = distance_calculation(bins)
-        # self.tetra_heatmap = table_tetra(bins, self.tetra_distance)
         self.dendro_tetra = dendrogram_tetra(bins, self.tetra_distance)
         self.gc_distplot = distplot_gc(bins)
+        self.gc_coding_density = scatter_GC_coding_density(bins)
 
     # def __repr__(self):
     #     return self.gc_scatter_plot + self.gc_distplot
