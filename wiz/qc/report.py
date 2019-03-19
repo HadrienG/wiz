@@ -55,7 +55,7 @@ def scatter_GC_coding_density(bins):
         yaxis=dict(title="Global GC average (%)", range=[0,100])
     )
     fig = Figure(plotdata, layout)
-    plot(fig)
+    # plot(fig)
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 def distplot_gc(data):  # waiting a test
