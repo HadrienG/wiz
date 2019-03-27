@@ -66,10 +66,7 @@ def finch(genome_id, path_db, output_dir):
     logger.info(f" sketching {genome_id}")
     subprocess.run([finch, "sketch",f"{output_dir}/finch/{genome_id}.fna","-o", f"{output_dir}/finch/{genome_id}.sk"])
     logger.info(f" Compare {genome_id} to DB")
-    path_db = path_db.split(" ")
-    for db in path_db:
-        logger.debug("db :"+db)
-        output = subprocess.run([finch,"dist", db, f"{output_dir}/finch/{genome_id}.sk"], capture_output=True)
-        with open(f"{output_dir}/finch/{genome_id}.finchout","ab") as f:
-            f.write(output.stdout)
+    subprocess.run([finch,"dist","-o", f"{output_dir}/finch/{genome_id}.finchout", path_db, f"{output_dir}/finch/{genome_id}.sk"])#, capture_output=True)
+    #with open(f"{output_dir}/finch/{genome_id}.finchout","ab") as f:
+    #    f.write(output.stdout)
 
