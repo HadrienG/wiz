@@ -154,6 +154,13 @@ def main():
         action='store_true',
         help=f"Disable detection of contigs with the same ID"
     )
+    parser_qc.add_argument(
+        "--db",
+        type=str,
+        required=True,
+        help="path to the Finch data bank folders.",
+        nargs='+'
+    )
 
 
     parser_qc.set_defaults(func=qc.run)

@@ -2,7 +2,8 @@
 # -*- coding: utf-8
 
 from wiz.annotate.tools import prodigal
-
+from wiz.qc.tools import finch
+import json
 
 def coding_density(genes_pos, len_seq):
     coding_region = 0
@@ -38,7 +39,17 @@ def coding_density2(genes_pos, len_seq):
     return tot_coding
 # =========================
 
-def taxonomy(parameter_list):
-    pass
+def taxonomy(seq_id, seq, args):
+    with open(f"{args.output}/finch/{seq_id}.fna","w") as fw:
+        seq = str(seq)
+        fw.write(f"> {seq_id}\n")
+        for i in range(0,len(seq),80):
+            fw.write(seq[i:i+80]+"\n")
+        fw.write("\n\n")
+    finch(seq_id, args.db, args.output)
+    finch_file = open(f"{args.output}/finch/{seq_id}.finchout","r").readlines()
+    finch_out = json.loads(finch_file)
+    #print(finch_out)
+    return "14"
 
 

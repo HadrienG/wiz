@@ -196,7 +196,7 @@ def round_value(window_size):  # I think it's OK
 
 
 def jinja_report(report_data, args):
-    logger.info("Make a wonderful report for you")
+    logger.info(" Make a wonderful report for you")
     file_loader = FileSystemLoader("wiz/misc/template", followlinks=True)
     env = Environment(loader=file_loader)
     template = env.get_template("report.html")

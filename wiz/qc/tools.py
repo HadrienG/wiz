@@ -3,55 +3,10 @@
 
 import logging
 import os
+from wiz.misc import path
+import subprocess
 
 logger = logging.getLogger(__name__)
-
-
-# def check_for_duplicates(duplicates_list, auto_filter):
-#     """Checks based on IDs if duplicates are present"""
-#     id_list = []
-#     duplicates_founded = False
-#     bins_duplicated = []
-#     for bin in duplicates_list:
-#         if bin.id not in id_list:
-#             id_list.append(bin.id)
-#         else:
-#             duplicates_founded = True
-#             bins_duplicated.append(bin.id)
-#     if duplicates_founded:
-#         logger.warning("Duplicated bins founded:")
-#         logger.warn(bins_duplicated)
-#         if auto_filter:
-#             logger.info("automatic filtration")
-#             return automatic_filter(duplicates_list)
-#         else:
-#             rep = input("""Do you want :
-#             \t[D]o nothing
-#             \t[A]utomatically filter (default)
-#             =>\t""").lower()
-#             if rep == "d":
-#                 logger.info("ignored filtration")
-#                 return duplicates_list
-#             else:
-#                 if not (rep == "a" or rep == ""):
-#                     logger.warn(
-#                         f"'{rep}' is a bad value ! The default option is used")
-#                 logger.info("automatic filtration")
-#                 return automatic_filter(duplicates_list)
-#     else:
-#         return duplicates_list
-
-
-# def automatic_filter(list_bins):
-#     """Analyze the list provided and keep the first
-#     item founded in case of duplicates"""
-#     id_list = []
-#     filtered_list = []
-#     for bin in list_bins:
-#         if bin.id not in id_list:
-#             id_list.append(bin.id)
-#             filtered_list.append(bin)
-#     return filtered_list
 
 
 def check_window_size(sequence, window_size):       # I think it's OK
@@ -105,4 +60,16 @@ def get_gene_seq(path, file):
     return sequence
 
 
+def finch(genome_id, path_db, output_dir):
+    finch = path.software_exists("finch")
+    logger.info(" Running Finch")
+    logger.info(f" sketching {genome_id}")
+    subprocess.run([finch, "sketch",f"{output_dir}/finch/{genome_id}.fna","-o", f"{output_dir}/finch/{genome_id}.sk"])
+    logger.info(f" Compare {genome_id} to DB")
+    path_db = path_db.split(" ")
+    for db in path_db:
+        logger.debug("db :"+db)
+        output = subprocess.run([finch,"dist", db, f"{output_dir}/finch/{genome_id}.sk"], capture_output=True)
+        with open(f"{output_dir}/finch/{genome_id}.finchout","ab") as f:
+            f.write(output.stdout)
 
