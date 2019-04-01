@@ -11,6 +11,7 @@ from wiz.qc.tools import get_file_name as gfn
 from wiz.qc.tools import get_gene_seq as ggs
 from wiz.qc.tools import finch
 from wiz.misc.path import create_dir as mkdir
+import wiz.qc.taxonomy as tax
 from Bio import SeqIO
 import os
 
@@ -27,18 +28,23 @@ def run(args):
         report.create_dir(args.output)
         for genome_file in args.genomes:
             logger.debug(f" Prodigal on {genome_file}")
-            mkdir(args.output+"/prodigal",force=True)
-            prodigal(genome_file,output_dir=args.output+"/prodigal",output_prefix=gfn(genome_file))
-            seq_genes = ggs(args.output+"/prodigal",gfn(genome_file))
-            mkdir(args.output+"/finch",force=True)
+            mkdir(args.output+"/prodigal", force=True)
+            prodigal(genome_file, output_dir=args.output+"/prodigal", output_prefix=gfn(genome_file))
+            seq_genes = ggs(args.output+"/prodigal", gfn(genome_file))
+            mkdir(args.output+"/finch", force=True)
             logger.debug(f" genome file: {genome_file}")
             f = open(genome_file, 'r')
+            seq_ids = []
             with f:
                 fasta_file = SeqIO.parse(f, 'fasta')
                 logger.info(f" Loading {genome_file}")
                 for record in fasta_file:
                     genome_bin = Bins(record, args, seq_genes)
                     bins.append(genome_bin)
+                    seq_ids.append(genome_bin.id)
+                    tax.extract_contig(genome_bin.id, genome_bin.seq, args)  # put each contig in separate files on folder finch to preprare the sketching
+            tax.sketching_contig(seq_ids, genome_file, args)
+            tax.taxonomy(tax.dist_contigs(os.path.basename(genome_file), args), args, bins)
         report_data = report.Report(bins, args.window)
         report_html = report.jinja_report(report_data, args)
         report.write_QCreport(args, report_html)

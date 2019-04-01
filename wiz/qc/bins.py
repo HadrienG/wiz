@@ -15,13 +15,11 @@ class Bins:
         self.gc_bounds = gc.get_bounds(self.gc, self.gc_percentil)
         self.gc_filtered = gc.percentil_filter(self.gc, self.gc_percentil)
         self.tetra = tetra.tetranuc_count(self.seq)
+        self.taxonomy = "undefined"
         if self.name in gene_pos.keys():
             self.coding_density = taxonomy.coding_density(gene_pos[self.name], len(self.seq))
-        else :
+        else:
             self.coding_density = 0
-        if len(seq) > 1300:
-            self.taxonomy = taxonomy.taxonomy(self.id, self.seq, args)
-        else : 
-            self.taxonomy = "[Not Available, contig too small]"
+        
 
 # TODO Validating the class

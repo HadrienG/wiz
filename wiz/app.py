@@ -88,6 +88,8 @@ def main():
     )
     parser_phylogeny.set_defaults(func=phylogeny.run)
 
+
+
     # qc subparser
     parser_qc = subparsers.add_parser(
         'qc',
@@ -108,6 +110,7 @@ def main():
         default=False,
         help='Enable debug logging'
     )
+    # required arguments
     parser_qc.add_argument(
         "-g",
         "--genomes",
@@ -117,6 +120,20 @@ def main():
         required=True,
         nargs='+'
     )
+    parser_qc.add_argument(
+        "--finchdb",
+        type=str,
+        required=True,
+        help="path to the Finch databank file (.sk)",
+        nargs='+'
+    )
+    parser_qc.add_argument(
+        "--taxadb",
+        type=str,
+        required=True,
+        help="Path to the taxadb sqlite database"
+    )
+    # optional arguments
     parser_qc.add_argument(
         "-o",
         "--output",
@@ -140,27 +157,23 @@ def main():
         default=(os.cpu_count()-1),
         help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})"
     )
-    parser_qc_f = parser_qc.add_mutually_exclusive_group()
-    parser_qc_f.add_argument(
-        "-a",
-        "--autofilter",
-        action='store_true',
-        default=True,
-        help=f"Enable auto deletion of contigs with the same ID"
-    )
-    parser_qc_f.add_argument(
-        "-i",
-        "--ignorefilter",
-        action='store_true',
-        help=f"Disable detection of contigs with the same ID"
-    )
-    parser_qc.add_argument(
-        "--db",
-        type=str,
-        required=True,
-        help="path to the Finch data bank folders.",
-        nargs='+'
-    )
+    
+
+
+    # parser_qc_f = parser_qc.add_mutually_exclusive_group()
+    # parser_qc_f.add_argument(
+    #     "-a",
+    #     "--autofilter",
+    #     action='store_true',
+    #     default=True,
+    #     help=f"Enable auto deletion of contigs with the same ID"
+    # )
+    # parser_qc_f.add_argument(
+    #     "-i",
+    #     "--ignorefilter",
+    #     action='store_true',
+    #     help=f"Disable detection of contigs with the same ID"
+    # )
 
 
     parser_qc.set_defaults(func=qc.run)
