@@ -64,33 +64,27 @@ def finch(genome_id, path_db, output_dir):
     finch = path.software_exists("finch")
     logger.debug(" Running Finch")
     logger.debug(f" sketching {genome_id}")
-    subprocess.run([finch, "sketch",f"{output_dir}/finch/{genome_id}.fna","-o", f"{output_dir}/finch/{genome_id}.sk"])
+    subprocess.run([finch, "sketch",f"{output_dir}/finch/{genome_id}.fna", "-o", f"{output_dir}/finch/{genome_id}.sk"])
     logger.debug(f" Compare {genome_id} to DB")
-    path_dbs = ""
-    for db in path_db:
-        path_dbs += f" {db}"
-    #subprocess.run([finch,"dist","-o", f"{output_dir}/finch/{genome_id}", path_db, f"{output_dir}/finch/{genome_id}.sk"])#, capture_output=True)
-    subprocess.run([finch,"dist","--max-dist","0.2","-o", f"{output_dir}/finch/{genome_id}", path_dbs,"--queries", f"{output_dir}/finch/{genome_id}.sk"])#, capture_output=True)
-    #with open(f"{output_dir}/finch/{genome_id}.finchout","ab") as f:
-    #    f.write(output.stdout)
+    s_args = [finch, "dist", "--max-dist", "0.2", "-o", f"{output_dir}/finch/{genome_id}"]
+    s_args += path_db
+    s_args += ["--queries", f"{output_dir}/finch/{genome_id}.sk"]
+    subprocess.run(s_args)
 
 
-def finch_sketch(filename, contigs, output_dir):
+def finch_sketch(filename, output):
     finch = path.software_exists("finch")
     logger.debug(f" Finch sketching contigs in {filename}")
-    target = ""
-    for contig in contigs:
-        target += f" {os.path.abspath(output_dir)}/finch/{contig}.fna"
-    print([finch, "sketch", target,"-o" , f"{output_dir}/finch/{filename}.sk"])
-    subprocess.run([finch, "sketch", target,"-o" , f"{output_dir}/finch/{filename}.sk"])
+    subprocess.run([finch, "sketch", "-N", "-o", f"{output}/finch/{filename}.sk", f"{output}/finch/{filename}.fna"])
     logger.debug(" Finch sketching end")
 
 
 def finch_dist(filename, dbs, output_dir):
-    logger.debug(f"Finch Compare {filename} to DB")
+    logger.debug(f" Finch Compare {filename} to DB")
     finch = path.software_exists("finch")
-    path_dbs = ""
-    for db in dbs:
-        path_dbs += f" {db}"
-    subprocess.run([finch,"dist","--max-dist","0.2","-o", f"{output_dir}/finch/{filename}", path_dbs,"--queries", f"{output_dir}/finch/{filename}.sk"])
+    s_args = [finch, "dist", "--max-dist", "0.2", "-o", f"{output_dir}/finch/{filename}"]
+    s_args += dbs
+    s_args += [f"{output_dir}/finch/{filename}.sk"]
+    subprocess.run(s_args)
+    # subprocess.run([finch, "dist", "--max-dist", "0.2", "-o", f"{output_dir}/finch/{filename}", dbs, f"{output_dir}/finch/{filename}.sk"])
     logger.debug(" Finch conparating end")

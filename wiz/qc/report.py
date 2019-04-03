@@ -38,16 +38,16 @@ def scatter_gc(data, window_size):  # waiting a test
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    #plot(fig)
+    # plot(fig) #* Debug line to plot directly in default internet explorer the graph
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 
 def scatter_GC_coding_density(bins):
-    plotdata= []
-    debug=["name","coding density","GC global"]
+    plotdata = []
+    debug = ["name","coding density","GC global"]
     logger.debug(f"{debug[0]:^20}|{debug[1]:^15}|{debug[2]:^15}")
     for item in bins:
-        logger.debug(f"{item.name:^20}|{item.coding_density:^15}|{item.gc_global:^15}")
+        logger.debug(f"{item.name:^20}|{round(item.coding_density,8):>15}|{round(item.gc_global,8):>15}")
         plotdata.append(Scatter(x=[item.coding_density], y=[item.gc_global],name=item.name, mode='markers'))
     layout = Layout(
         title="Coding density on global GC average",
@@ -55,8 +55,9 @@ def scatter_GC_coding_density(bins):
         yaxis=dict(title="Global GC average (%)", range=[0,100])
     )
     fig = Figure(plotdata, layout)
-    # plot(fig)
+    # plot(fig) #* Debug line to plot directly in default internet explorer the graph
     return plot(fig, include_plotlyjs=True, output_type='div')
+
 
 def distplot_gc(data):  # waiting a test
     seq_values, seq_names, _, _ = extract_values(data)
@@ -66,9 +67,8 @@ def distplot_gc(data):  # waiting a test
         xaxis=dict(title="Average of GC"),
         yaxis=dict(title="Relative amount of reads", range=[0, 1])
     )
-    # plot(fig)  # just here to help in the dev of this function
+    # plot(fig) #* Debug line to plot directly in default internet explorer the graph 
     return plot(fig, include_plotlyjs=True, output_type='div')
-# TODO comment the displot graph
 
 
 def dendrogram_tetra(bins, report):
@@ -169,7 +169,62 @@ def dendrogram_tetra(bins, report):
     # ! need to fix xy name of sequence
 
 
-def extract_values(data):  # I think it's OK
+def contigs_taxonomy(bins):
+    figs = []
+    for genome in bins:
+        tax = genome.taxonomy
+        dict_link = {}
+        list_nodes = [genome.id]
+        for t in tax:
+            taxa, jaccard = t
+            for node in taxa:
+                logger.debug(taxa)
+                if node not in list_nodes:
+                    list_nodes.append(node)
+            for node in taxa:
+                if taxa.index(node) == len(taxa)-1:
+                    if (list_nodes.index(node), 0) in dict_link.keys():
+                        dict_link[list_nodes.index(node), 0] += 1/jaccard
+                    else:
+                        dict_link[list_nodes.index(node), 0] = 1/jaccard
+                else:
+                    next_node = taxa[taxa.index(node)+1]
+                    key = (list_nodes.index(node), list_nodes.index(next_node))
+                    if key in dict_link.keys():
+                        dict_link[key] += 1/jaccard
+                    else:
+                        dict_link[key] = 1/jaccard
+        src, target, value = [], [], []
+        for k in dict_link:
+            s, t = k
+            src.append(s)
+            target.append(t)
+            value.append(dict_link[k])
+        data = dict(
+            type='sankey',
+            node = dict(
+                pad = 15,
+                thickness = 15,
+                line = dict(
+                    color = "black",
+                    width = 0.5
+                ),
+                label = list_nodes
+            ),
+            link = dict(
+                source = src,
+                target = target,
+                value = value
+            ))
+        layout = dict(
+            title = f"Taxonomy of {genome.id}")
+        fig = dict(data=[data], layout=layout)
+        plot(fig)
+        figs.append(plot(fig, include_plotlyjs=True, output_type='div'))
+    return figs
+
+
+def extract_values(data):
     seq_values, seq_names, bounds, percentil = [], [], [], []
     for dat in data:
         seq_values.append(dat.gc)
@@ -179,17 +234,17 @@ def extract_values(data):  # I think it's OK
     return (seq_values, seq_names, bounds, percentil)
 
 
-def unit(window_size):  # I think it's OK
+def unit(window_size):
     return f"{round_value(window_size)} {factor10_unit(window_size)}"
 
 
-def factor10_unit(window_size):  # I think it's OK
+def factor10_unit(window_size):
     unit = ["b", "Kb", "Mb", "Gb", "Tb"]
     log_value = int(log(window_size, 1000))
     return unit[log_value]
 
 
-def round_value(window_size):  # I think it's OK
+def round_value(window_size):
     log_value = int(log(window_size, 1000))
     numeric_value = round(window_size/1000**log_value, 2)
     return numeric_value
@@ -237,6 +292,4 @@ class Report:
         self.dendro_tetra = dendrogram_tetra(bins, self.tetra_distance)
         self.gc_distplot = distplot_gc(bins)
         self.gc_coding_density = scatter_GC_coding_density(bins)
-
-    # def __repr__(self):
-    #     return self.gc_scatter_plot + self.gc_distplot
+        self.contigs_taxonomy = contigs_taxonomy(bins)

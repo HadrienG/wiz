@@ -11,7 +11,6 @@ import os
 import logging
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -50,31 +49,63 @@ def coding_density2(genes_pos, len_seq):
 # =========================
 
 
-def taxonomy(dist_results, args, bins):
+def taxonomy(g_id, g_seq, args):
+    logger.info(f"Sketching {g_id}")
+    extract_contig(g_id, g_seq, args)
+    tools.finch_sketch(g_id, args.output)
+    logger.info(f"Search for sequences similar to {g_id}")
+    tools.finch_dist(g_id, args.finchdb, args.output)
+    logger.info(f"Identification of the taxonomy of the results")
+    identification = extract_finch_data(g_id, args)
+    tax = taxid(identification, args)
+    return tax
+
+
+def taxid(dist_results, args):
     # taxadb link init
     names = SciName(dbtype='sqlite', dbname=args.taxadb)
     accession = AccessionID(dbtype='sqlite', dbname=args.taxadb)
     taxid = TaxID(dbtype='sqlite', dbname=args.taxadb)
-    for key in dist_results:
-        tax_id = 0
-        lineage = []
-        results = dist_results[key]
-        r_temp = []
-        for result in results:
-            ref, jaccard = result
-            if isinstance(accession.taxid(ref), int):
-                tax_id = accession.taxid(ref)
-            else:
-                taxid = names.taxid(ref)
-            if type(tax_id) == int:
-                lineage = taxid.lineage_name(tax_id)
-                r_temp.append(ref, lineage, jaccard)
-            else:
-                raise ValueError(f"Unfound taxid for {ref}. Please check the databases !")
-        dist_results[key] = r_temp
-    for genome_bin in bins:
-        if genome_bin.id in dist_results.keys():
-            genome_bin.taxonomy = dist_results[genome_bin.id]
+    tax = []
+    for result in dist_results:
+        ref, jaccard = result
+        tax_id, lineage = 0, []
+        tax_id = accession.taxid(ref)
+        if type(tax_id) != int:
+            r = ref.split(".")[0]
+            tax_id = accession.taxid(r)
+        if type(tax_id) != int:
+            tax_id = names.taxid(ref)
+        if type(tax_id) == int:
+            lineage = taxid.lineage_name(tax_id, reverse=False)
+            logger.info(f" Taxid :   found   : {ref}.")
+            tax.append((lineage, jaccard))
+        else:
+            logger.info(f" Taxid : not found : {ref}.")
+            tax.append(([ref, "Not found"], jaccard))
+    return tax
+
+
+    # for key in dist_results:
+    #     tax_id = 0
+    #     lineage = []
+    #     results = dist_results[key]
+    #     r_temp = []
+    #     for result in results:
+    #         ref, jaccard = result
+    #         if isinstance(accession.taxid(ref), int):
+    #             tax_id = accession.taxid(ref)
+    #         else:
+    #             taxid = names.taxid(ref)
+    #         if type(tax_id) == int:
+    #             lineage = taxid.lineage_name(tax_id)
+    #             r_temp.append(ref, lineage, jaccard)
+    #         else:
+    #             raise ValueError(f"Unfound taxid for {ref}. Please check the databases !")
+    #     dist_results[key] = r_temp
+    # for genome_bin in bins:
+    #     if genome_bin.id in dist_results.keys():
+    #         genome_bin.taxonomy = dist_results[genome_bin.id]
 
 
 def extract_contig(seq_id, seq, args):
@@ -86,28 +117,27 @@ def extract_contig(seq_id, seq, args):
         fw.write("\n\n")
 
 
-def sketching_contig(contigs, filename, args):
-    filename = os.path.basename(filename)
-    tools.finch_sketch(filename, contigs, args.output)
-    #for contig in contigs:
-    #    os.remove(f"{args.output}/finch/{contig}.fna")
+# def sketching_contig(contigs, filename, args):
+#     filename = os.path.basename(filename)
+#     tools.finch_sketch(filename, contigs, args.output)
+#     #for contig in contigs:
+#     #    os.remove(f"{args.output}/finch/{contig}.fna")
 
 
-def dist_contigs(filename, args):
-    tools.finch_dist(filename, args.finchdb, args.output)
-    finch_out = {}
+def extract_finch_data(filename, args):
+    finch_out = []
     finch_file = open(f"{args.output}/finch/{filename}.json", "r").readlines()
     for line in finch_file:
         result = json.loads(line)
         if result != 0:
             for r in result:
-                if r["query"] in finch_out.keys():
-                    finch_out[r["query"]].append((r["reference"], r["jaccard"]))
-                else:
-                    finch_out[r["query"]] = [(r["reference"], r["jaccard"])]
-    logger.info(f" {len(finch_out)} results found")
+                finch_out.append((r["reference"], r["jaccard"]))
+    logger.info(f" {len(finch_out)} results found for {filename}")
+    if len(finch_out) == 0:
+        finch_out.append((["Nothing found"], 0.5))
+    os.remove(f"{os.path.abspath(args.output)}/finch/{filename}.fna")
     os.remove(f"{os.path.abspath(args.output)}/finch/{filename}.sk")
     os.remove(f"{os.path.abspath(args.output)}/finch/{filename}.json")
-    # return dictionnary with list of tuple with each result of distance calculation
-    # finch_out[contig]=[(ref, dist), (ref, dist), ...]
+    # return a list of tuple with each result of distance calculation
+    # finch_out=[(ref, dist), (ref, dist), ...]
     return(finch_out)

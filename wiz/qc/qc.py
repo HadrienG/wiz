@@ -34,17 +34,13 @@ def run(args):
             mkdir(args.output+"/finch", force=True)
             logger.debug(f" genome file: {genome_file}")
             f = open(genome_file, 'r')
-            seq_ids = []
             with f:
                 fasta_file = SeqIO.parse(f, 'fasta')
                 logger.info(f" Loading {genome_file}")
                 for record in fasta_file:
                     genome_bin = Bins(record, args, seq_genes)
+                    genome_bin.taxonomy = tax.taxonomy(genome_bin.id, genome_bin.seq, args)
                     bins.append(genome_bin)
-                    seq_ids.append(genome_bin.id)
-                    tax.extract_contig(genome_bin.id, genome_bin.seq, args)  # put each contig in separate files on folder finch to preprare the sketching
-            tax.sketching_contig(seq_ids, genome_file, args)
-            tax.taxonomy(tax.dist_contigs(os.path.basename(genome_file), args), args, bins)
         report_data = report.Report(bins, args.window)
         report_html = report.jinja_report(report_data, args)
         report.write_QCreport(args, report_html)
