@@ -171,56 +171,103 @@ def dendrogram_tetra(bins, report):
 
 def contigs_taxonomy(bins):
     figs = []
+    dict_link, list_nodes, colors = {}, [], []
+    rank_order = [
+        "no rank",
+        "superkingdom",
+        "phylum",
+        "class",
+        "order",
+        "family",
+        "genus",
+        "species",
+        "query"
+        ]
+    rank_color = {
+        "query": "#990000",
+        "no rank": "#cc0000",
+        "superkingdom": "#ff6600",
+        "phylum": "#ff9900",
+        "class": "#669900",
+        "order": "#3366ff",
+        "family": "#330066",
+        "genus": "#990099",
+        "species": "#cc66cc"
+        }
     for genome in bins:
         tax = genome.taxonomy
-        dict_link = {}
-        list_nodes = [genome.id]
         for t in tax:
             taxa, jaccard = t
-            for node in taxa:
-                logger.debug(taxa)
-                if node not in list_nodes:
-                    list_nodes.append(node)
-            for node in taxa:
-                if taxa.index(node) == len(taxa)-1:
-                    if (list_nodes.index(node), 0) in dict_link.keys():
-                        dict_link[list_nodes.index(node), 0] += 1/jaccard
+            if taxa["no rank"] != "Not found":
+                for rank in rank_order:
+                    if rank != "query":
+                        if rank in taxa.keys() and taxa[rank] not in list_nodes:
+                            list_nodes.append(taxa[rank])
+                            colors.append(rank_color[rank])
                     else:
-                        dict_link[list_nodes.index(node), 0] = 1/jaccard
-                else:
-                    next_node = taxa[taxa.index(node)+1]
-                    key = (list_nodes.index(node), list_nodes.index(next_node))
-                    if key in dict_link.keys():
-                        dict_link[key] += 1/jaccard
-                    else:
-                        dict_link[key] = 1/jaccard
-        src, target, value = [], [], []
-        for k in dict_link:
-            s, t = k
-            src.append(s)
-            target.append(t)
-            value.append(dict_link[k])
-        data = dict(
-            type='sankey',
-            node = dict(
-                pad = 15,
-                thickness = 15,
-                line = dict(
-                    color = "black",
-                    width = 0.5
-                ),
-                label = list_nodes
+                        if genome.id not in list_nodes:
+                            list_nodes.append(genome.id)
+                            colors.append(rank_color[rank])
+                for rank in rank_order[:-1]:
+                    if rank in taxa.keys():
+                        actual_node = list_nodes.index(taxa[rank])
+                        for r in rank_order[rank_order.index(rank)+1:]:
+                            if r in taxa.keys():
+                                next_node = list_nodes.index(taxa[r])
+                                break
+                        if actual_node != next_node:
+                            if (actual_node, next_node) in dict_link.keys():
+                                dict_link[(actual_node, next_node)] += 1/jaccard
+                            else:
+                                dict_link[(actual_node, next_node)] = 1/jaccard
+                        else:
+                            next_node = list_nodes.index(genome.id)
+                            if (actual_node, next_node) in dict_link.keys():
+                                dict_link[(actual_node, next_node)] += 1/jaccard
+                            else:
+                                dict_link[(actual_node, next_node)] = 1/jaccard
+            # for node in taxa:
+            #     if taxa.index(node) == len(taxa)-1:
+            #         if (list_nodes.index(node), 0) in dict_link.keys():
+            #             dict_link[list_nodes.index(node), 0] += 1/jaccard
+            #         else:
+            #             dict_link[list_nodes.index(node), 0] = 1/jaccard
+            #     else:
+            #         next_node = taxa[taxa.index(node)+1]
+            #         key = (list_nodes.index(node), list_nodes.index(next_node))
+            #         if key in dict_link.keys():
+            #             dict_link[key] += 1/jaccard
+            #         else:
+            #             dict_link[key] = 1/jaccard
+    src, target, value = [], [], []
+    for k in dict_link:
+        s, t = k
+        src.append(s)
+        target.append(t)
+        value.append(dict_link[k])
+    data = dict(
+        type='sankey',
+        arrangement = "freeform",
+        node = dict(
+            pad = 15,
+            #thickness = 15,
+            line = dict(
+                color = "black",
+                width = 0.5
             ),
-            link = dict(
-                source = src,
-                target = target,
-                value = value
-            ))
-        layout = dict(
-            title = f"Taxonomy of {genome.id}")
-        fig = dict(data=[data], layout=layout)
-        plot(fig)
-        figs.append(plot(fig, include_plotlyjs=True, output_type='div'))
+            label = list_nodes,
+            color = colors
+        ),
+        link = dict(
+            source = src,
+            target = target,
+            value = value
+        ))
+    layout = dict(
+        title = f"Global Taxonomy")
+    fig = dict(data=[data], layout=layout)
+    plot(fig)
+    figs.append(plot(fig, include_plotlyjs=True, output_type='div'))
     return figs
 
 

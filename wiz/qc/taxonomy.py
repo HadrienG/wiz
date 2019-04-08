@@ -27,28 +27,6 @@ def coding_density(genes_pos, len_seq):
     return ((coding_region-overlap_region)/len_seq)*100
 
 
-# ok to remove this function
-def coding_density2(genes_pos, len_seq):
-    # print(genes_pos)
-    coding_region = [(genes_pos[0])]
-    for genes in genes_pos[1:]:
-        r_start, r_stop = coding_region[-1]
-        g_start, g_stop = genes
-        if g_start > r_stop+1:
-            coding_region.append(genes)
-        else:
-            if g_stop > r_stop:
-                coding_region[-1] = (r_start, g_stop)
-    tot_coding = 0
-    for region in coding_region:
-        tot_coding += (region[1]-region[0])
-    # print(tot_coding)
-    tot_coding = (tot_coding/len_seq)*100
-    # print(tot_coding)
-    return tot_coding
-# =========================
-
-
 def taxonomy(g_id, g_seq, args):
     logger.info(f"Sketching {g_id}")
     extract_contig(g_id, g_seq, args)
@@ -69,43 +47,25 @@ def taxid(dist_results, args):
     tax = []
     for result in dist_results:
         ref, jaccard = result
-        tax_id, lineage = 0, []
-        tax_id = accession.taxid(ref)
-        if type(tax_id) != int:
-            r = ref.split(".")[0]
-            tax_id = accession.taxid(r)
-        if type(tax_id) != int:
-            tax_id = names.taxid(ref)
-        if type(tax_id) == int:
-            lineage = taxid.lineage_name(tax_id, reverse=False)
-            logger.info(f" Taxid :   found   : {ref}.")
-            tax.append((lineage, jaccard))
+        if ref != "Nothing found" :
+            tax_id, lineage = 0, []
+            tax_id = accession.taxid(ref)
+            if type(tax_id) != int:
+                r = ref.split(".")[0]
+                tax_id = accession.taxid(r)
+            if type(tax_id) != int:
+                tax_id = names.taxid(ref)
+            if type(tax_id) == int:
+                lineage = taxid.lineage_name(tax_id, reverse=False, ranks=True)
+                logger.debug(f" Taxid :   found   : {ref}.")
+                tax.append((lineage, jaccard))
+            else:
+                logger.debug(f" Taxid : not found : {ref}.")
+                tax.append(({"species": ref, "no rank": "Not found"}, jaccard))
         else:
             logger.info(f" Taxid : not found : {ref}.")
-            tax.append(([ref, "Not found"], jaccard))
+            tax.append(({"species": ref, "no rank": "Not found"}, jaccard))
     return tax
-
-
-    # for key in dist_results:
-    #     tax_id = 0
-    #     lineage = []
-    #     results = dist_results[key]
-    #     r_temp = []
-    #     for result in results:
-    #         ref, jaccard = result
-    #         if isinstance(accession.taxid(ref), int):
-    #             tax_id = accession.taxid(ref)
-    #         else:
-    #             taxid = names.taxid(ref)
-    #         if type(tax_id) == int:
-    #             lineage = taxid.lineage_name(tax_id)
-    #             r_temp.append(ref, lineage, jaccard)
-    #         else:
-    #             raise ValueError(f"Unfound taxid for {ref}. Please check the databases !")
-    #     dist_results[key] = r_temp
-    # for genome_bin in bins:
-    #     if genome_bin.id in dist_results.keys():
-    #         genome_bin.taxonomy = dist_results[genome_bin.id]
 
 
 def extract_contig(seq_id, seq, args):
@@ -115,13 +75,6 @@ def extract_contig(seq_id, seq, args):
         for i in range(0, len(seq), 80):
             fw.write(seq[i:i+80]+"\n")
         fw.write("\n\n")
-
-
-# def sketching_contig(contigs, filename, args):
-#     filename = os.path.basename(filename)
-#     tools.finch_sketch(filename, contigs, args.output)
-#     #for contig in contigs:
-#     #    os.remove(f"{args.output}/finch/{contig}.fna")
 
 
 def extract_finch_data(filename, args):
@@ -134,7 +87,7 @@ def extract_finch_data(filename, args):
                 finch_out.append((r["reference"], r["jaccard"]))
     logger.info(f" {len(finch_out)} results found for {filename}")
     if len(finch_out) == 0:
-        finch_out.append((["Nothing found"], 0.5))
+        finch_out.append(("Nothing found", 0.5))
     os.remove(f"{os.path.abspath(args.output)}/finch/{filename}.fna")
     os.remove(f"{os.path.abspath(args.output)}/finch/{filename}.sk")
     os.remove(f"{os.path.abspath(args.output)}/finch/{filename}.json")
