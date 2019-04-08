@@ -170,7 +170,6 @@ def dendrogram_tetra(bins, report):
 
 
 def contigs_taxonomy(bins):
-    figs = []
     dict_link, list_nodes, colors = {}, [], []
     rank_order = [
         "no rank",
@@ -226,19 +225,7 @@ def contigs_taxonomy(bins):
                                 dict_link[(actual_node, next_node)] += 1/jaccard
                             else:
                                 dict_link[(actual_node, next_node)] = 1/jaccard
-            # for node in taxa:
-            #     if taxa.index(node) == len(taxa)-1:
-            #         if (list_nodes.index(node), 0) in dict_link.keys():
-            #             dict_link[list_nodes.index(node), 0] += 1/jaccard
-            #         else:
-            #             dict_link[list_nodes.index(node), 0] = 1/jaccard
-            #     else:
-            #         next_node = taxa[taxa.index(node)+1]
-            #         key = (list_nodes.index(node), list_nodes.index(next_node))
-            #         if key in dict_link.keys():
-            #             dict_link[key] += 1/jaccard
-            #         else:
-            #             dict_link[key] = 1/jaccard
+
     src, target, value = [], [], []
     for k in dict_link:
         s, t = k
@@ -266,9 +253,8 @@ def contigs_taxonomy(bins):
     layout = dict(
         title = f"Global Taxonomy")
     fig = dict(data=[data], layout=layout)
-    plot(fig)
-    figs.append(plot(fig, include_plotlyjs=True, output_type='div'))
-    return figs
+    # plot(fig)
+    return plot(fig, include_plotlyjs=True, output_type='div')
 
 
 def extract_values(data):
@@ -310,7 +296,9 @@ def jinja_report(report_data, args):
         day_date=time.asctime(),
         average_gc=report_data.gc_scatter_plot,
         gc_dist=report_data.gc_distplot,
-        tetra_heatmap=report_data.dendro_tetra)
+        tetra_heatmap=report_data.dendro_tetra,
+        coding_density=report_data.gc_coding_density,
+        taxonomy_map=report_data.contigs_taxonomy)
     return output
 
 
