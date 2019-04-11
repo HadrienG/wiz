@@ -19,7 +19,7 @@ def coding_density(genes_pos, len_seq):
     overlap_region = 0
     for genes in genes_pos:
         coding_region += (genes[1]-genes[0])
-    for genes in genes_pos[:-1]: 
+    for genes in genes_pos[:-1]:
         n_genes = genes_pos[genes_pos.index(genes)+1]
         overlap_region += max(0, min(genes[1], n_genes[1])-max(genes[0], n_genes[0]))
     # print(coding_region,overlap_region)
@@ -47,7 +47,7 @@ def taxid(dist_results, args):
     tax = []
     for result in dist_results:
         ref, jaccard = result
-        if ref != "Nothing found" :
+        if ref != "Nothing found":
             tax_id, lineage = 0, []
             tax_id = accession.taxid(ref)
             if type(tax_id) != int:
