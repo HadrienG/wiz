@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Wiz Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <!--<link rel='stylesheet' href='MEP.css'/> -->
+    <style>
+body{
+    background-color: #ffffff;
+    font-family : Arial ;
+    }
+#content{
+    padding-top:25px;
+    margin : 20px 15%;
+    min-width: 70%;
+    }
+h1, h2 {
+    height:40px;
+    color: #261822;
+    text-align : center;
+    font-family : Verdana ;
+    margin: 20px 5%;
+}
+hr {
+    height: 3px;
+    margin: 5px;
+    border-color: transparent;
+    background-image : linear-gradient(90deg ,transparent, #40152A, transparent) 
+}
+.GC .header-box
+{
+  background: #47AB5C;
+}
+.GC .footer-box 
+{
+  background: #69FC6E;
+}
+.Note .header-box
+{
+  background: #AD3E2B;
+}
+.Note .footer-box
+{
+  background: #FA5A3E;
+}
+.param .header-box
+{
+  background: #055961;
+}
+.param .footer-box
+{
+  background: #09A0AE;
+}
+.tetra .header-box
+{
+  background: #14384E;
+}
+.tetra .footer-box
+{
+  background: #25668D
+}
+
+.footer-box{
+  background : #E0DFE0;
+  border-width: 0px;
+  border-style: solid;  
+  padding: 10px 15px;
+  font-size: 12px ;
+  border-left-width: 4px;
+  border-left-color:#4A4A4A;
+}
+.header-box {
+    height: 20px;
+    border-width: 0px;
+    border-style: solid;  
+    padding: 10px 15px;
+    font-size: 15px ;
+    font-style: bold;
+    border-left-width: 4px;
+    border-left-color:#4A4A4A;
+    background : #949394;
+    /* background: #FFFFFF;
+    background: -webkit-linear-gradient(top right, #FFFFFF, #949394);
+    background: -moz-linear-gradient(top right, #FFFFFF, #949394);
+    background: linear-gradient(top right, #FFFFFF, #949394); */
+}
+.box-icon
+{
+    color: #261822;
+    margin: 5px;
+}
+.box-desc
+{
+    margin-top:10px;
+    margin-bottom: 10px;
+    margin-left: 25px;
+    padding : 10px; 
+    border-style: solid;
+    border-width:0px;
+    border-left-width: 4px;
+    border-left-color: #969696;
+    background: #FFFFFF;
+    background: -webkit-linear-gradient(top right, #FFFFFF, #C9C9C9);
+    background: -moz-linear-gradient(top right, #FFFFFF, #C9C9C9);
+    background: linear-gradient(top right, #FFFFFF, #C9C9C9);
+}
+
+    </style>
+  </head>
+  <body>
+  <div id="content">
+    <h1>Wiz report</h1>
+    <h2>Quality check module</h2>
+    <hr class="line">
+    <div class="Note"><div class="header-box"> <!-- start of note box -->
+        <span class="box-icon"><i class='far fa-file-alt'></i></span>
+        <span class="box-title">report generated on :</span></div>
+        <div class="footer-box" > {{day_date}}</div>
+    </div> <!-- end of note box --> 
+      <hr class="line">
+      <div class="param">
+      <div class="header-box">
+      <span class="box-icon"><i class="fas fa-terminal"></i></span><span>Summary of the parameters used:</span></div>
+        <div class="footer-box">
+        <ul><li>Input files :</li>
+        <ul>
+        {% for f in param_filein %}
+          <li>{{f}}</li>
+        {% endfor %}
+        </ul>
+        <li>Output folder :<ul><li> {{param_fileout}}</li></ul></li>
+        <li>Window size for calculating gc average :<ul><li> {{param_window}}pb.</li></ul></li>
+        <li>Number of processes allowed:<ul><li> {{param_cpu}}</li></ul></li>
+        </div></div>
+      <hr>
+      <div class="GC">
+      <div class="header-box">
+      <span class="box-icon"><i class="fas fa-dna"></i></span><span>Proportion of GC in sequences:</span></div>
+        <div class="footer-box">
+        [short explanation about the content of this graph]
+        </div>
+        {{average_gc}}
+        <div class="footer-box">
+        [short explanation about the content of this graph]
+        </div></div>
+        {{gc_dist}}
+      <hr>
+      <div class="tetra">
+      <div class="header-box"><span class="box-icon"><i class="fas fa-arrows-alt-v"></i></span><span>Tetranucleique distance heatmap beetwen sequences:</span></div>
+        <div class="footer-box">
+        [short explanation about the content of this graph]
+        </div></div>
+        {{tetra_heatmap}}
+      <hr>
+      <div class="header-box"><span class="box-icon"><i class="fas fa-arrows-alt-v"></i></span><span>Coding density:</span></div>
+        <div class="footer-box">
+        [short explanation about the content of this graph]
+        </div></div>
+        {{coding_density}}
+      <hr>
+      <div class="header-box"><span class="box-icon"><i class="fas fa-arrows-alt-v"></i></span><span>Taxonomy map:</span></div>
+        <div class="footer-box">
+        [short explanation about the content of this graph]
+        </div></div>
+        {{taxonomy_map}}
+      <hr>
+    </div>
+  </body>
+</html>
