@@ -38,7 +38,24 @@ def scatter_gc(data, window_size):  # waiting a test
         xaxis=dict(title="Position in the sequence"),
         yaxis=dict(title="Average of GC", range=[0, 100]))
     fig = Figure(plotdata, layout)
-    #plot(fig)
+    # plot(fig) #* Debug line to plot directly in default internet explorer the graph
+    return plot(fig, include_plotlyjs=True, output_type='div')
+
+
+def scatter_GC_coding_density(bins):
+    plotdata = []
+    debug = ["name","coding density","GC global"]
+    logger.debug(f"{debug[0]:^20}|{debug[1]:^15}|{debug[2]:^15}")
+    for item in bins:
+        logger.debug(f"{item.name:^20}|{round(item.coding_density,8):>15}|{round(item.gc_global,8):>15}")
+        plotdata.append(Scatter(x=[item.coding_density], y=[item.gc_global],name=item.name, mode='markers'))
+    layout = Layout(
+        title="Coding density on global GC average",
+        xaxis=dict(title="coding density (%)", range=[0,100]),
+        yaxis=dict(title="Global GC average (%)", range=[0,100])
+    )
+    fig = Figure(plotdata, layout)
+    # plot(fig) #* Debug line to plot directly in default internet explorer the graph
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 
@@ -50,9 +67,8 @@ def distplot_gc(data):  # waiting a test
         xaxis=dict(title="Average of GC"),
         yaxis=dict(title="Relative amount of reads", range=[0, 1])
     )
-    # plot(fig)  # just here to help in the dev of this function
+    # plot(fig) #* Debug line to plot directly in default internet explorer the graph 
     return plot(fig, include_plotlyjs=True, output_type='div')
-# TODO comment the displot graph
 
 
 def dendrogram_tetra(bins, report):
@@ -153,7 +169,95 @@ def dendrogram_tetra(bins, report):
     # ! need to fix xy name of sequence
 
 
-def extract_values(data):  # I think it's OK
+def contigs_taxonomy(bins):
+    dict_link, list_nodes, colors = {}, [], []
+    rank_order = [
+        "no rank",
+        "superkingdom",
+        "phylum",
+        "class",
+        "order",
+        "family",
+        "genus",
+        "species",
+        "query"
+        ]
+    rank_color = {
+        "query": "#990000",
+        "no rank": "#cc0000",
+        "superkingdom": "#ff6600",
+        "phylum": "#ff9900",
+        "class": "#669900",
+        "order": "#3366ff",
+        "family": "#330066",
+        "genus": "#990099",
+        "species": "#cc66cc"
+        }
+    for genome in bins:
+        tax = genome.taxonomy
+        for t in tax:
+            taxa, jaccard = t
+            if taxa["no rank"] != "Not found":
+                for rank in rank_order:
+                    if rank != "query":
+                        if rank in taxa.keys() and taxa[rank] not in list_nodes:
+                            list_nodes.append(taxa[rank])
+                            colors.append(rank_color[rank])
+                    else:
+                        if genome.id not in list_nodes:
+                            list_nodes.append(genome.id)
+                            colors.append(rank_color[rank])
+                for rank in rank_order[:-1]:
+                    if rank in taxa.keys():
+                        actual_node = list_nodes.index(taxa[rank])
+                        for r in rank_order[rank_order.index(rank)+1:]:
+                            if r in taxa.keys():
+                                next_node = list_nodes.index(taxa[r])
+                                break
+                        if actual_node != next_node:
+                            if (actual_node, next_node) in dict_link.keys():
+                                dict_link[(actual_node, next_node)] += 1/jaccard
+                            else:
+                                dict_link[(actual_node, next_node)] = 1/jaccard
+                        else:
+                            next_node = list_nodes.index(genome.id)
+                            if (actual_node, next_node) in dict_link.keys():
+                                dict_link[(actual_node, next_node)] += 1/jaccard
+                            else:
+                                dict_link[(actual_node, next_node)] = 1/jaccard
+
+    src, target, value = [], [], []
+    for k in dict_link:
+        s, t = k
+        src.append(s)
+        target.append(t)
+        value.append(dict_link[k])
+    data = dict(
+        type='sankey',
+        arrangement = "freeform",
+        node = dict(
+            pad = 15,
+            #thickness = 15,
+            line = dict(
+                color = "black",
+                width = 0.5
+            ),
+            label = list_nodes,
+            color = colors
+        ),
+        link = dict(
+            source = src,
+            target = target,
+            value = value
+        ))
+    layout = dict(
+        title = f"Global Taxonomy")
+    fig = dict(data=[data], layout=layout)
+    # plot(fig)
+    return plot(fig, include_plotlyjs=True, output_type='div')
+
+
+def extract_values(data):
     seq_values, seq_names, bounds, percentil = [], [], [], []
     for dat in data:
         seq_values.append(dat.gc)
@@ -163,24 +267,24 @@ def extract_values(data):  # I think it's OK
     return (seq_values, seq_names, bounds, percentil)
 
 
-def unit(window_size):  # I think it's OK
+def unit(window_size):
     return f"{round_value(window_size)} {factor10_unit(window_size)}"
 
 
-def factor10_unit(window_size):  # I think it's OK
+def factor10_unit(window_size):
     unit = ["b", "Kb", "Mb", "Gb", "Tb"]
     log_value = int(log(window_size, 1000))
     return unit[log_value]
 
 
-def round_value(window_size):  # I think it's OK
+def round_value(window_size):
     log_value = int(log(window_size, 1000))
     numeric_value = round(window_size/1000**log_value, 2)
     return numeric_value
 
 
 def jinja_report(report_data, args):
-    logger.info("Make a wonderful report for you")
+    logger.info(" Make a wonderful report for you")
     file_loader = FileSystemLoader("wiz/misc/template", followlinks=True)
     env = Environment(loader=file_loader)
     template = env.get_template("report.html")
@@ -192,7 +296,9 @@ def jinja_report(report_data, args):
         day_date=time.asctime(),
         average_gc=report_data.gc_scatter_plot,
         gc_dist=report_data.gc_distplot,
-        tetra_heatmap=report_data.dendro_tetra)
+        tetra_heatmap=report_data.dendro_tetra,
+        coding_density=report_data.gc_coding_density,
+        taxonomy_map=report_data.contigs_taxonomy)
     return output
 
 
@@ -218,9 +324,7 @@ class Report:
         logger.info(" Develops sophisticated graphs for the report")
         self.gc_scatter_plot = scatter_gc(bins, window)
         self.tetra_distance = distance_calculation(bins)
-        # self.tetra_heatmap = table_tetra(bins, self.tetra_distance)
         self.dendro_tetra = dendrogram_tetra(bins, self.tetra_distance)
         self.gc_distplot = distplot_gc(bins)
-
-    # def __repr__(self):
-    #     return self.gc_scatter_plot + self.gc_distplot
+        self.gc_coding_density = scatter_GC_coding_density(bins)
+        self.contigs_taxonomy = contigs_taxonomy(bins)

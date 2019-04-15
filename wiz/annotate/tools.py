@@ -26,7 +26,7 @@ def prodigal(genome, output_prefix="bin", trans_table=11, output_dir=None):
         "genes": out_gff
     }
 
-    logger.info("Running prodigal")
+    logger.info(" Running prodigal")
     gff = subprocess.run([prodigal, "-i", args["input"], "-g",
                           args["trans_table"], "-m", "-f", "gff",
                           "-a", args["proteins"]],

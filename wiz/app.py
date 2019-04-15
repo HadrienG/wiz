@@ -8,7 +8,7 @@ import os
 
 
 from wiz.qc import qc
-from wiz.misc import util
+# from wiz.misc import util
 from wiz.phylogeny import phylogeny
 
 from wiz.version import __version__
@@ -60,7 +60,7 @@ def main():
         "-g",
         "--genome",
         type=str,
-        metavar="",
+        # metavar="",
         help="input genome bin in fasta format",
         required=True
     )
@@ -68,21 +68,21 @@ def main():
         "-c",
         "--clade",
         type=str,
-        metavar="",
+        # metavar="",
         help="clade used for phylogeny and pan-genome analysis"
     )
     parser_clade.add_argument(
         "-d",
         "--clade_dir",
         type=str,
-        metavar="",
+        # metavar="",
         help="do not download a clade and use **.faa file in clade_dir instead"
     )
     parser_phylogeny.add_argument(
         "-o",
         "--output",
         type=str,
-        metavar="",
+        # metavar="",
         default="wiz_output",
         help=f"output directory"
     )
@@ -108,20 +108,35 @@ def main():
         default=False,
         help='Enable debug logging'
     )
+    # required arguments
     parser_qc.add_argument(
         "-g",
         "--genomes",
         type=str,
-        metavar="",
+        # metavar="",
         help="input genomes in fasta format",
         required=True,
         nargs='+'
     )
     parser_qc.add_argument(
+        "--finchdb",
+        type=str,
+        required=True,
+        help="path to the Finch databank file (.sk)",
+        nargs='+'
+    )
+    parser_qc.add_argument(
+        "--taxadb",
+        type=str,
+        required=True,
+        help="Path to the taxadb sqlite database"
+    )
+    # optional arguments
+    parser_qc.add_argument(
         "-o",
         "--output",
         type=str,
-        metavar="",
+        # metavar="",
         default="wiz_output",
         help=f"output directory"
     )
@@ -129,7 +144,6 @@ def main():
         "-w",
         "--window",
         type=int,
-        metavar="",
         default=5000,
         help=f"Size of slicing window for GC statistics"
     )
@@ -140,22 +154,20 @@ def main():
         default=(os.cpu_count()-1),
         help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})"
     )
-    parser_qc_f = parser_qc.add_mutually_exclusive_group()
-    parser_qc_f.add_argument(
-        "-a",
-        "--autofilter",
-        action='store_true',
-        default=True,
-        help=f"Enable auto deletion of contigs with the same ID"
-    )
-    parser_qc_f.add_argument(
-        "-i",
-        "--ignorefilter",
-        action='store_true',
-        help=f"Disable detection of contigs with the same ID"
-    )
-
-
+    # parser_qc_f = parser_qc.add_mutually_exclusive_group()
+    # parser_qc_f.add_argument(
+    #     "-a",
+    #     "--autofilter",
+    #     action='store_true',
+    #     default=True,
+    #     help=f"Enable auto deletion of contigs with the same ID"
+    # )
+    # parser_qc_f.add_argument(
+    #     "-i",
+    #     "--ignorefilter",
+    #     action='store_true',
+    #     help=f"Disable detection of contigs with the same ID"
+    # )
     parser_qc.set_defaults(func=qc.run)
 
     args = parser.parse_args()
@@ -181,7 +193,7 @@ def main():
         logger.debug(e)
         parser.print_help()
         logging.shutdown()
-        raise  # extra traceback to uncomment for extra debugging powers
+        #raise  # extra traceback to uncomment for extra debugging powers
 
 
 if __name__ == "__main__":

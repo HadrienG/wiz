@@ -12,6 +12,7 @@ plotly = "*"
 scipy = "*"
 joblib = "*"
 jinja2 = "*"
+taxadb = "*"
 
 [dev-packages]
 pytest = "*"
