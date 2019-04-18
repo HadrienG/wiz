@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
+<<<<<<< HEAD
 import os
 from wiz.qc.tools import hmmscan
 import logging
