@@ -9,7 +9,7 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
-def check_window_size(sequence, window_size):       # I think it's OK
+def check_window_size(sequence, window_size):       
     if len(sequence) == 0:
         error = "The sequence is void."
         raise ValueError(error)
@@ -98,8 +98,8 @@ def finch_sketch(filename, output):
     logger.debug(" Finch sketching end")
 
 
-def finch_dist(filename, dbs, output_dir):
-    logger.debug(f" Finch Compare {filename} to DB")
+def finch_dist(filename, dbs, outdir):
+    logger.debug(f" Finch compare {filename} to DB")
     finch = path.software_exists("finch")
     s_args = [
         finch,
@@ -107,8 +107,24 @@ def finch_dist(filename, dbs, output_dir):
         "--max-dist",
         "0.2",
         "-o",
-        f"{output_dir}/finch/{filename}"]
+        f"{outdir}/finch/{filename}"]
     s_args += dbs
-    s_args += [f"{output_dir}/finch/{filename}.sk"]
+    s_args += [f"{outdir}/finch/{filename}.sk"]
     subprocess.run(s_args)
     logger.debug(" Finch conparating end")
+
+
+def hmmscan(filename, dbs, outdir):
+    logger.debug(f" Hmmer compare {filename} to DB")
+    hmmscan = path.software_exists("hmmscan")
+    s_args = [
+        hmmscan,
+        "--noali",
+        # "--max",
+        "--tblout",
+        outdir,
+        dbs,
+        filename
+    ]
+    subprocess.run(s_args)
+    logger.debug(" HMMScan end")

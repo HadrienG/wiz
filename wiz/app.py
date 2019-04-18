@@ -131,6 +131,12 @@ def main():
         required=True,
         help="Path to the taxadb sqlite database"
     )
+    parser_qc.add_argument(
+        "--hmmdb",
+        type=str,
+        help="Path to folder who contain the folders of hmm banks for targeting and identification.",
+        required=True
+    )
     # optional arguments
     parser_qc.add_argument(
         "-o",
@@ -154,20 +160,6 @@ def main():
         default=(os.cpu_count()-1),
         help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})"
     )
-    # parser_qc_f = parser_qc.add_mutually_exclusive_group()
-    # parser_qc_f.add_argument(
-    #     "-a",
-    #     "--autofilter",
-    #     action='store_true',
-    #     default=True,
-    #     help=f"Enable auto deletion of contigs with the same ID"
-    # )
-    # parser_qc_f.add_argument(
-    #     "-i",
-    #     "--ignorefilter",
-    #     action='store_true',
-    #     help=f"Disable detection of contigs with the same ID"
-    # )
     parser_qc.set_defaults(func=qc.run)
 
     args = parser.parse_args()
@@ -193,7 +185,7 @@ def main():
         logger.debug(e)
         parser.print_help()
         logging.shutdown()
-        #raise  # extra traceback to uncomment for extra debugging powers
+        raise  # extra traceback to uncomment for extra debugging powers
 
 
 if __name__ == "__main__":

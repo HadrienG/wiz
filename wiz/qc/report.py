@@ -17,22 +17,36 @@ from scipy.spatial.distance import pdist, squareform
 logger = logging.getLogger(__name__)
 
 
-def scatter_gc(data, window_size):  # waiting a test
+def scatter_gc(data, window_size):  
     seq_values, seq_names, seq_bounds, seq_percentil = extract_values(data)
     plotdata = []
     for seq, name, bound, percentil in zip(
             seq_values, seq_names, seq_bounds, seq_percentil):
         position = [i*window_size for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=seq, name=name,
-            mode='markers', marker=dict(size=3)))
+        plotdata.append(Scatter(
+            x=position,
+            y=seq,
+            name=name,
+            mode='markers',
+            marker=dict(size=3)))
         y_down = [bound[0] for i in range(0, len(seq))]
         y_up = [bound[1] for i in range(0, len(seq))]
-        plotdata.append(Scatter(x=position, y=y_down,
+        plotdata.append(Scatter(
+            x=position,
+            y=y_down,
             name=name+" "+str(percentil[0])+"e percentil",
-            mode='lines', line=dict(width=1), opacity=0.25, showlegend=False))
-        plotdata.append(Scatter(x=position, y=y_up,
-            name=name+" "+str(percentil[1])+"e percentil", mode='lines',
-            line=dict(width=1), opacity=0.25, showlegend=False))
+            mode='lines',
+            line=dict(width=1),
+            opacity=0.25,
+            showlegend=False))
+        plotdata.append(Scatter(
+            x=position,
+            y=y_up,
+            name=name+" "+str(percentil[1])+"e percentil",
+            mode='lines',
+            line=dict(width=1),
+            opacity=0.25,
+            showlegend=False))
     layout = Layout(  # * Try to change scatter in plot or bar
         title=f"Average GC per windows of {unit(window_size)}",
         xaxis=dict(title="Position in the sequence"),
@@ -44,22 +58,27 @@ def scatter_gc(data, window_size):  # waiting a test
 
 def scatter_GC_coding_density(bins):
     plotdata = []
-    debug = ["name","coding density","GC global"]
+    debug = ["name", "coding density", "GC global"]
     logger.debug(f"{debug[0]:^20}|{debug[1]:^15}|{debug[2]:^15}")
     for item in bins:
-        logger.debug(f"{item.name:^20}|{round(item.coding_density,8):>15}|{round(item.gc_global,8):>15}")
-        plotdata.append(Scatter(x=[item.coding_density], y=[item.gc_global],name=item.name, mode='markers'))
+        logger.debug(
+            f"{item.name:^20}|{round(item.coding_density,8):>15}|{round(item.gc_global, 8):>15}")
+        plotdata.append(Scatter(
+            x=[item.coding_density],
+            y=[item.gc_global],
+            name=item.name,
+            mode='markers'))
     layout = Layout(
         title="Coding density on global GC average",
-        xaxis=dict(title="coding density (%)", range=[0,100]),
-        yaxis=dict(title="Global GC average (%)", range=[0,100])
+        xaxis=dict(title="coding density (%)", range=[0, 100]),
+        yaxis=dict(title="Global GC average (%)", range=[0, 100])
     )
     fig = Figure(plotdata, layout)
     # plot(fig) #* Debug line to plot directly in default internet explorer the graph
     return plot(fig, include_plotlyjs=True, output_type='div')
 
 
-def distplot_gc(data):  # waiting a test
+def distplot_gc(data): 
     seq_values, seq_names, _, _ = extract_values(data)
     fig = distplot(seq_values, seq_names)
     fig['layout'].update(
@@ -118,8 +137,8 @@ def dendrogram_tetra(bins, report):
     fig.add_traces(heatmap)
     # edit layout
     fig['layout'].update({
-        #'width': 800,
-        #'height': 800,
+        # 'width': 800,
+        # 'height': 800,
         'showlegend': False,
         "hovermode": "closest"
         })
@@ -216,13 +235,17 @@ def contigs_taxonomy(bins):
                                 break
                         if actual_node != next_node:
                             if (actual_node, next_node) in dict_link.keys():
-                                dict_link[(actual_node, next_node)] += 1/jaccard
+                                dict_link[(
+                                    actual_node,
+                                    next_node)] += 1/jaccard
                             else:
                                 dict_link[(actual_node, next_node)] = 1/jaccard
                         else:
                             next_node = list_nodes.index(genome.id)
                             if (actual_node, next_node) in dict_link.keys():
-                                dict_link[(actual_node, next_node)] += 1/jaccard
+                                dict_link[(
+                                    actual_node,
+                                    next_node)] += 1/jaccard
                             else:
                                 dict_link[(actual_node, next_node)] = 1/jaccard
 
@@ -234,24 +257,24 @@ def contigs_taxonomy(bins):
         value.append(dict_link[k])
     data = dict(
         type='sankey',
-        arrangement = "freeform",
-        node = dict(
-            pad = 15,
-            #thickness = 15,
-            line = dict(
-                color = "black",
-                width = 0.5
+        arrangement="freeform",
+        node=dict(
+            pad=15,
+            # thickness = 15,
+            line=dict(
+                color="black",
+                width=0.5
             ),
-            label = list_nodes,
-            color = colors
+            label=list_nodes,
+            color=colors
         ),
-        link = dict(
-            source = src,
-            target = target,
-            value = value
+        link=dict(
+            source=src,
+            target=target,
+            value=value
         ))
     layout = dict(
-        title = f"Global Taxonomy")
+        title=f"Global Taxonomy")
     fig = dict(data=[data], layout=layout)
     # plot(fig)
     return plot(fig, include_plotlyjs=True, output_type='div')
@@ -291,8 +314,8 @@ def jinja_report(report_data, args):
     output = template.render(
         param_filein=args.genomes,
         param_fileout=args.output,
-        param_cpu = args.c,
-        param_window = args.window,
+        param_cpu=args.c,
+        param_window=args.window,
         day_date=time.asctime(),
         average_gc=report_data.gc_scatter_plot,
         gc_dist=report_data.gc_distplot,
@@ -322,9 +345,15 @@ def write_QCreport(args, report):
 class Report:
     def __init__(self, bins, window):
         logger.info(" Develops sophisticated graphs for the report")
+        logger.debug("Making gc_scatter_plot")
         self.gc_scatter_plot = scatter_gc(bins, window)
+        logger.debug("Making tetra_distance")
         self.tetra_distance = distance_calculation(bins)
+        logger.debug("Making dendro_tetra")
         self.dendro_tetra = dendrogram_tetra(bins, self.tetra_distance)
+        logger.debug("Making gc_distplot")
         self.gc_distplot = distplot_gc(bins)
+        logger.debug("Making gc_coding_density")
         self.gc_coding_density = scatter_GC_coding_density(bins)
+        logger.debug("Making contigs_taxonomy")
         self.contigs_taxonomy = contigs_taxonomy(bins)

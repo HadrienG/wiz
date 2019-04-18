@@ -11,6 +11,7 @@ from wiz.qc.tools import get_file_name as gfn
 from wiz.qc.tools import get_gene_seq as ggs
 from wiz.qc.tools import finch
 from wiz.misc.path import create_dir as mkdir
+from wiz.qc.phylo import phylogeny
 import wiz.qc.taxonomy as tax
 from Bio import SeqIO
 import os
@@ -29,18 +30,36 @@ def run(args):
         for genome_file in args.genomes:
             logger.debug(f" Prodigal on {genome_file}")
             mkdir(args.output+"/prodigal", force=True)
-            prodigal(genome_file, output_dir=args.output+"/prodigal", output_prefix=gfn(genome_file))
+            prodigal(
+                genome_file,
+                output_dir=args.output+"/prodigal",
+                output_prefix=gfn(genome_file))
             seq_genes = ggs(args.output+"/prodigal", gfn(genome_file))
+            mkdir(args.output+"/hmmer", force=True)
+            phylo = phylogeny(genome_file, args)
+            logger.debug(phylo)
             mkdir(args.output+"/finch", force=True)
             logger.debug(f" genome file: {genome_file}")
             f = open(genome_file, 'r')
+            pos_in_file = 0
             with f:
                 fasta_file = SeqIO.parse(f, 'fasta')
                 logger.info(f" Loading {genome_file}")
                 for record in fasta_file:
-                    genome_bin = Bins(record, args, seq_genes)
-                    genome_bin.taxonomy = tax.taxonomy(genome_bin.id, genome_bin.seq, args)
+                    pos_in_file += 1
+                    genome_bin = Bins(
+                        record,
+                        args,
+                        seq_genes,
+                        gfn(genome_file),
+                        pos_in_file,
+                        phylo)
+                    # genome_bin.taxonomy = tax.taxonomy(   # TODO uncomment before release
+                        # genome_bin.id,                    # TODO uncomment before release
+                        # genome_bin.seq,                   # TODO uncomment before release
+                        # args)                             # TODO uncomment before release
                     bins.append(genome_bin)
+                    logger.debug(genome_bin.phylogeny_profils)
         report_data = report.Report(bins, args.window)
         report_html = report.jinja_report(report_data, args)
         report.write_QCreport(args, report_html)
@@ -54,5 +73,5 @@ def run(args):
     else:
         logger.info(" wiz qc finished. Goodbye.")
 
-# TODO adding parameter
-# TODO converting genome parameter in genome folder
+# TODO search this line in each file 
+# TODO " # TODO uncomment before release "

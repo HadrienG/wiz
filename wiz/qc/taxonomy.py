@@ -23,7 +23,7 @@ def coding_density(genes_pos, len_seq):
         n_genes = genes_pos[genes_pos.index(genes)+1]
         overlap_region += max(0, min(genes[1], n_genes[1])-max(genes[0], n_genes[0]))
     # print(coding_region,overlap_region)
-    # print(((coding_region-overlap_region)/len_seq)*100)
+    logger.debug(f" Coding density : {((coding_region-overlap_region)/len_seq)*100}")
     return ((coding_region-overlap_region)/len_seq)*100
 
 
