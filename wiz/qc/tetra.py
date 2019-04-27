@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
+
 from os import cpu_count
 from multiprocessing import Pool
-
 import logging
 
 
@@ -40,22 +40,32 @@ def tetra_manhattan_distance(seq1={}, seq2={}):
     return total
 
 
-def distance_calculation(bins, nb_process=(cpu_count()-1)):
+def distance_calculation(contigs, nb_process=(cpu_count()-1)):
     tasks = []
-    for binI in bins[:-1]:
-        for binJ in bins[bins.index(binI)+1:]:
-            tasks.append(((binI.id, binJ.id), (binI.tetra, binJ.tetra)))
+    for contig_I in contigs[:-1]:
+        for contig_J in contigs[contigs.index(contig_I)+1:]:
+            tasks.append(
+                (
+                    (
+                        contig_I.id,
+                        contig_J.id
+                    ),
+                    (
+                        tetranuc_count(contig_I.sequence),
+                        tetranuc_count(contig_J.sequence)
+                    )
+                ))
     results = []
     with Pool(processes=nb_process) as pool:
-        results = pool.map(SPcalculation, tasks)
+        results = pool.map(compute_dist, tasks)
     dict_results = {}
-    for res in results:
-        id, value = res
-        dict_results[id] = value
+    for result in results:
+        contig_id, value = result
+        dict_results[contig_id] = value
     return dict_results
 
 
-def SPcalculation(task):
+def compute_dist(task):
     id, values = task
     result = tetra_manhattan_distance(values[0], values[1])
     return (id, result)

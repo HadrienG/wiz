@@ -113,7 +113,7 @@ def main():
         "-g",
         "--genomes",
         type=str,
-        # metavar="",
+        metavar="genome.fasta",
         help="input genomes in fasta format",
         required=True,
         nargs='+'
@@ -122,27 +122,31 @@ def main():
         "--finchdb",
         type=str,
         required=True,
-        help="path to the Finch databank file (.sk)",
-        nargs='+'
+        help="path to the Finch sketch file(s) (.sk)",
+        nargs='+',
+        metavar="finchsketch.sk"
     )
     parser_qc.add_argument(
         "--taxadb",
         type=str,
         required=True,
-        help="Path to the taxadb sqlite database"
+        help="Path to the taxadb sqlite database",
+        metavar="path/to/taxadb.sqlite"
     )
     parser_qc.add_argument(
-        "--hmmdb",
+        "--markers",
         type=str,
-        help="Path to folder who contain the folders of hmm banks for targeting and identification.",
-        required=True
+        help="Path to genetics markers profils",
+        required=True,
+        nargs="+",
+        metavar="marker.hmm"
     )
     # optional arguments
     parser_qc.add_argument(
         "-o",
         "--output",
         type=str,
-        # metavar="",
+        metavar="[home/my_report_folder]",
         default="wiz_output",
         help=f"output directory"
     )
@@ -151,14 +155,22 @@ def main():
         "--window",
         type=int,
         default=5000,
-        help=f"Size of slicing window for GC statistics"
+        help=f"Size of slicing window for GC statistics",
+        metavar="[int]"
     )
     parser_qc.add_argument(
         "-c",
         "-cpus",
         type=int,
         default=(os.cpu_count()-1),
-        help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})"
+        help=f"number of cpus allowed for multi process operations. (default: cpu - 1 = {os.cpu_count()-1})",
+        metavar="[int]"
+    )
+    parser_qc.add_argument(
+        "--force",
+        action='store_true',
+        default=False,
+        help="[DANGER] allows data overwriting if the output folder already exists"
     )
     parser_qc.set_defaults(func=qc.run)
 

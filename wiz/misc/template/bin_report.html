@@ -1,0 +1,94 @@
+<div class="Note">
+    <div class="header-box">
+        <span class="box-icon">
+            <i class='far fa-file-alt'></i>
+        </span>
+        <span class="box-title">
+            Report of bin {{bin_name}}:
+        </span>
+    </div>
+    <div class="footer-box" >
+        Path: {{bin_path}} 
+    </div>
+</div>
+<div class="GC">
+    <div class="header-box">
+        <span class="box-icon">
+            <i class="fas fa-dna"></i>
+        </span>
+        <span>
+            Proportion of GC in sequences:
+        </span>
+    </div>
+    <div class="footer-box">
+        window of {{window}}pb:</br>
+        {% for contig in contigs%}
+            Contig: {{contig.name}}</br>
+            {{contig.gc_cutouts}}</br>
+            --------------------</br>
+        {% endfor %}
+    </div>
+    <div class="graph">
+        {{average_gc}}
+    </div>
+    <div class="footer-box">
+        Density of window by GC average:
+    </div>
+    <div class="graph">
+        {{gc_density}}
+    </div>
+</div>
+<div class="coding">
+    <div class="header-box">
+        <span class="box-icon">
+            <i class="fas fa-arrows-alt-v"></i>
+        </span>
+        <span>
+            Coding density:
+        </span>
+    </div>
+    <div class="footer-box">
+        {% for contig in contigs%}
+            Contig: {{contig.name}}</br>
+            GC average of contig : {{contig.gc_contig}}</br>
+            Coding density : {{contig.coding_density}}</br>
+            --------------------</br>
+        {% endfor %}
+    </div>
+    <div class="graph">
+        {{coding_density}}
+    </div>
+</div>
+<div class="tetra">
+    <div class="header-box">
+        <span class="box-icon">
+            <i class="fas fa-arrows-alt-v"></i>
+        </span>
+        <span>
+            Tetranucleique distance heatmap beetwen sequences:
+        </span>
+    </div>
+    <div class="footer-box">
+        [short explanation about the content of this graph]
+    </div>
+    <div class="graph">
+    {{tetra_heatmap}}
+    </div>
+</div>
+<div class="taxa">
+    <div class="header-box">
+        <span class="box-icon">
+            <i class="fas fa-arrows-alt-v"></i>
+        </span>
+        <span>
+            Taxonomy map:
+        </span>
+    </div>
+    <div class="footer-box">
+        [short explanation about the content of this graph]
+    </div>
+    <div class="graph">
+        {{taxonomy_map}}
+    </div>
+</div>
+<hr>

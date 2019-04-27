@@ -9,7 +9,30 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
-def check_window_size(sequence, window_size):       
+def create_dirs(output, force_overwrite):
+    logger.debug(" Creating dirs")
+    if not os.path.exists(output) or force_overwrite:
+        if force_overwrite:
+            logger.info(" You used the --force young padawan!")
+            if os.path.exists(output):
+                logger.warning(" The output folder already exists!")
+                logger.warning(" The data in it may be overwritten!")
+        path.create_dir(output, force=True)
+        path.create_dir(output+"/prodigal", force=True)
+        path.create_dir(output+"/hmmer", force=True)
+        path.create_dir(output+"/finch", force=True)
+        logger.info(" The path folder as been created.")
+        logger.info(f" All output files will be stored in {output}")
+    else:
+        logger.warning(f" The path {output} already exists !")
+        logger.info(" use --force to overwrite the data")
+        exit(2)  # error code for "command line error in unix like system"
+
+
+def check_window_size(sequence, window_size):
+    # check the value of the window size and the length of the sequence
+    # the window_size must be 0 < size <= lenght(sequence)
+    # the lenght must be 0 < lenght(sequence)
     if len(sequence) == 0:
         error = "The sequence is void."
         raise ValueError(error)
@@ -20,86 +43,60 @@ def check_window_size(sequence, window_size):
         error = "The size of the window is null."
         raise ValueError(error)
     if window_size > len(sequence):
-        error = "The size of the window is superior of the sequence length."
+        error = f"The size of the window ({window_size}) is "
+        error += f"superior of the sequence length ({len(sequence)})."
         raise ValueError(error)
     return True
 
 
-def seq_spliter(sequence, window, truncate=True):
-    subseqs = []
-    if check_window_size(sequence, window):
-        average = []
-        seq_size = len(sequence)
-        for pos in range(0, seq_size, window):
-            # subseq = ""
-            if pos+window <= seq_size:
-                subseq = sequence[pos:pos+window]
-                subseqs.append(subseq)
-            else:
-                if not truncate:
-                    subseq = sequence[pos:]
-                    subseqs.append(subseq)
-    return subseqs
-
-
-def get_file_name(file):
+def file_name(file):
     file = os.path.basename(file)
+    # if filename = file.ext the part ext is removed
+    # ! problem if filename is file.10 because the number is removed
     if '.' in file:
-        file = file.split(".")[0]
+        file = file.split(".")[:-1]
+        file = ".".join(file)
     return file
 
 
-def get_gene_seq(path, file):
+def genes(path, file):
     sequence = {}
     with open(f"{os.path.abspath(path)}/{file}.gff", 'r') as f:
         for i in f.readlines():
+            # if the line is not a Prodigal comment
             if "#" not in i:
                 cut = i.split("\t")
+                # cut[0] = contig id
+                # cut[3] = gene start position
+                # cut[4] = gene stop position
                 if cut[0] in sequence.keys():
+                    # if dictionnary "sequence" contain
+                    # already the key contig_id
                     sequence[cut[0]].append((int(cut[3]), int(cut[4])))
                 else:
+                    # if dictionnary "sequence" don't contain the key contig_id
                     sequence[cut[0]] = [(int(cut[3]), int(cut[4]))]
     return sequence
 
 
-def finch(genome_id, path_db, output_dir):
-    finch = path.software_exists("finch")
-    logger.debug(" Running Finch")
-    logger.debug(f" sketching {genome_id}")
-    subprocess.run([
-        finch,
-        "sketch",
-        f"{output_dir}/finch/{genome_id}.fna",
-        "-o",
-        f"{output_dir}/finch/{genome_id}.sk"])
-    logger.debug(f" Compare {genome_id} to DB")
-    s_args = [
-        finch,
-        "dist",
-        "--max-dist",
-        "0.2",
-        "-o",
-        f"{output_dir}/finch/{genome_id}"]
-    s_args += path_db
-    s_args += ["--queries", f"{output_dir}/finch/{genome_id}.sk"]
-    subprocess.run(s_args)
-
-
 def finch_sketch(filename, output):
+    # prepare a sketch of the "filename" to being compared with a sketchsbank
     finch = path.software_exists("finch")
-    logger.debug(f" Finch sketching contigs in {filename}")
-    subprocess.run([
+    logger.info(f" Finch sketching contigs in {filename}")
+    s_args = [
         finch,
         "sketch",
         "-N",
         "-o",
         f"{output}/finch/{filename}.sk",
-        f"{output}/finch/{filename}.fna"])
+        f"{output}/finch/{filename}.fna"]
+    subprocess.run(s_args)
     logger.debug(" Finch sketching end")
 
 
 def finch_dist(filename, dbs, outdir):
-    logger.debug(f" Finch compare {filename} to DB")
+    # search distance between sketchsbank and a sketch of file "filename"
+    logger.info(f" Finch compare {filename} to DB")
     finch = path.software_exists("finch")
     s_args = [
         finch,
@@ -114,8 +111,10 @@ def finch_dist(filename, dbs, outdir):
     logger.debug(" Finch conparating end")
 
 
-def hmmscan(filename, dbs, outdir):
-    logger.debug(f" Hmmer compare {filename} to DB")
+def hmmscan(filename, profil, outdir):
+    txt = [file_name(filename), file_name(profil)]
+    logger.info(f" Hmmer compare {txt[0]} and {txt[1]}")
+    # compare a marker profil and proteins in file "filename"
     hmmscan = path.software_exists("hmmscan")
     s_args = [
         hmmscan,
@@ -123,8 +122,9 @@ def hmmscan(filename, dbs, outdir):
         # "--max",
         "--tblout",
         outdir,
-        dbs,
+        profil,
         filename
     ]
-    subprocess.run(s_args)
+    FNULL = open(os.devnull, "w")  # opening /dev/null like a file
+    subprocess.run(s_args, stdout=FNULL)  # writing stdout in /dev/null
     logger.debug(" HMMScan end")

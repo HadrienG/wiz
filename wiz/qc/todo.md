@@ -92,7 +92,15 @@ time pipenv run wiz qc -w 500 -g ../Shuffle_200 --debug
 distance_MPcalculation      0m11s260    0m34s923
 distance_calculation        0m24s586    0m24s595
 
-
 result coding region
     min max 0m6,936s result ok  31,396s
     region  0m7.002s result +1  31,973s
+
+Possibility of sequence with a unique contig, dendrotetra bug if a only one sequence in contig
+
+[X] change implementation of hmmdb,
+[X] write class contigs,
+[X] cleaning code,
+[X] comment code,
+[X] make test,
+[X] add data in report,
