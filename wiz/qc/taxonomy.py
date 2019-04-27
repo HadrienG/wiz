@@ -30,13 +30,6 @@ def coding_density(genes_pos, len_seq):
     return ((coding_region-overlap_region)/len_seq)*100
 
 
-# def extract_genes_position(name, genes):
-#     if name in genes.keys():
-#         return genes[name]
-#     elif:
-#         f"Prodigal_Seq_{str(self."
-
-
 def taxonomy(g_id, g_seq, args):
     logger.info(f"Sketching {g_id}")
     extract_contig(g_id, g_seq, args)
