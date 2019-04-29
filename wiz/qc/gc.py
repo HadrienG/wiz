@@ -31,6 +31,3 @@ def bounds(sequence, percent=[5, 95]):
     bound_2 = percentile(sequence, percent[1])
     return bound_1, bound_2
 
-
-# TODO Try to plot on graph windows outside the 95e and the 5e percentil
-# * Data filtered before that
