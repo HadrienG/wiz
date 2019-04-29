@@ -91,5 +91,5 @@ class bin_data:
         self.gc_map = graphs.scatter_gc(b.contigs, args.window)
         self.gc_density = graphs.distplot_gc(b.contigs)
         self.coding_density = graphs.scatter_GC_coding_density(b.contigs)
-        self.tetra_heatmap = graphs.dendrogram_tetra(b.contigs, args.cpu)
+        self.tetra_heatmap = graphs.dendrogram_tetra(b.contigs, args.c)
         self.taxonomy_map = graphs.contigs_taxonomy(b.contigs)
