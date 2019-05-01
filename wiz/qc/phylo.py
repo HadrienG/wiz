@@ -19,9 +19,9 @@ def phylogeny(filename, args):
     return sequences
 
 
-def cleaning_result(outdir, sequences):
+def cleaning_result(outfile, sequences):
     data = []
-    with open(outdir, "r") as long_report:
+    with open(outfile, "r") as long_report:
         lines = long_report.readlines()
         for l in lines[3:-10]:
             if "#" not in l:

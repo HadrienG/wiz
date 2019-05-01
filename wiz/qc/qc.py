@@ -7,7 +7,7 @@ import logging
 from Bio import SeqIO
 from wiz.qc import report, tools, taxonomy
 from wiz.qc.bins import Bins, Contig
-from wiz.qc.phylo import phylogeny
+# from wiz.qc.phylo import phylogeny
 from wiz.annotate.tools import prodigal
 
 
@@ -51,17 +51,19 @@ def run(args):
                     contig.coding_density = taxonomy.coding_density(
                         contig.genes_position,
                         contig.length)
-            # phylogenic analysis based on prodigal output
-            phylo = phylogeny(b.filename, args)
-            for contig in b.contigs:
-                if contig.id in phylo.keys():
-                    contig.phylogeny_profils = phylo[contig.id]
-            # taxonomic analysis
+            # # taxonomic analysis
+            # for contig in b.contigs:                  # TODO uncomment before release
+            #     contig.taxonomy = taxonomy.taxonomy(  # TODO uncomment before release
+            #         contig.id,                        # TODO uncomment before release
+            #         contig.sequence,                  # TODO uncomment before release
+            #         args)                             # TODO uncomment before release
+
+            # # Implementation of phylogenic analysis in the bad module
+            # # phylogenic analysis based on prodigal output
+            # phylo = phylogeny(b.filename, args)
             # for contig in b.contigs:
-            #     contig.taxonomy = taxonomy.taxonomy(
-            #         contig.id,
-            #         contig.sequence,
-            #         args)
+            #     if contig.id in phylo.keys():
+            #         contig.phylogeny_profils = phylo[contig.id]
 
         report_data = report.Report(bins, args)
         report.jinja_report(report_data, args)

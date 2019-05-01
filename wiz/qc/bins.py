@@ -20,7 +20,7 @@ class Contig:
         self.coding_density = -25
         self.genes_position = []
         self.taxonomy = [({"species": "undefined", "no rank": "Not found"}, 0)]
-        self.phylogeny_profils = "Not results"
+        # self.phylogeny_profils = "Not results"
 
 
 class Bins:
