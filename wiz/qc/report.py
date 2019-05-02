@@ -1,23 +1,79 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 
-import logging
-from wiz.qc import graphs
-from jinja2 import Environment, FileSystemLoader
+"""
+File that gathers the necessary functions to write report.
+"""
+
 import os
 import time
+import logging
+
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
+
+from wiz.qc import graphs
 
 logger = logging.getLogger(__name__)
 
 
+class Report:
+    """
+    Report object that contains the header object (report).
+    and the object body (report)
+    """
+    def __init__(self, bins, args):
+        self.header = Header(args)
+        self.bins_data = [BinData(b, args) for b in bins]
+
+
+class Header:
+    """
+    Object header that contains the parameters used to start wiz.
+    """
+    def __init__(self, args):
+        self.date = time.asctime()
+        self.input = args.genomes
+        self.output = args.output
+        self.window = args.window
+        self.cpu = args.c
+        # self.force = args.force
+        self.finch = args.finchdb
+        self.taxadb = args.taxadb
+        self.markers = args.markers
+
+
+class BinData:
+    """
+    Bin object that retrieves data from a bin for writing the report.
+    """
+    def __init__(self, b, args):
+        self.filename = b.filename
+        self.path = b.path
+        self.contigs = b.contigs
+        self.window = args.window
+        self.gc_map = graphs.scatter_gc(b.contigs, args.window)
+        self.gc_density = graphs.distplot_gc(b.contigs)
+        self.coding_density = graphs.scatter_gc_coding_density(b.contigs)
+        self.tetra_heatmap = graphs.dendrogram_tetra(b.contigs, args.c)
+        self.taxonomy_map = graphs.contigs_taxonomy(b.contigs)
+
+
 def jinja_report(report_data, args):
+    """
+    Function that generates each sub report of the bins and
+    the complete report before writing it to a file.
+    """
     logger.info(" Make a wonderful report for you")
     bins_reports = jinja_bin_report(report_data.bins_data)
     complet_report = jinja_body(report_data.header, bins_reports)
-    write_QCreport(args, complet_report)
+    write_report(args, complet_report)
 
 
 def jinja_bin_report(bins_data):
+    """
+    Function that generates a report for a bin.
+    """
     file_loader = FileSystemLoader("wiz/misc/template", followlinks=True)
     env = Environment(loader=file_loader)
     sub_report = env.get_template("bin_report.html")
@@ -39,6 +95,9 @@ def jinja_bin_report(bins_data):
 
 
 def jinja_body(header_data, bins_reports):
+    """
+    Function that generates the full report.
+    """
     file_loader = FileSystemLoader("wiz/misc/template", followlinks=True)
     env = Environment(loader=file_loader)
     template = env.get_template("report.html")
@@ -56,40 +115,11 @@ def jinja_body(header_data, bins_reports):
     return output
 
 
-def write_QCreport(args, report):
+def write_report(args, report):
+    """
+    Function that writes the full report.
+    """
     file_path = os.path.join(args.output, "QC_report.html")
-    with open(file_path, "w") as r:
-        r.writelines(report)
+    with open(file_path, "w") as report_file:
+        report_file.writelines(report)
     logger.info(" The QC report has been successfully written")
-
-
-class Report:
-    def __init__(self, bins, args):
-        self.header = Header(args)
-        self.bins_data = [bin_data(b, args) for b in bins]
-
-
-class Header:
-    def __init__(self, args):
-        self.date = time.asctime()
-        self.input = args.genomes
-        self.output = args.output
-        self.window = args.window
-        self.cpu = args.c
-        # self.force = args.force
-        self.finch = args.finchdb
-        self.taxadb = args.taxadb
-        self.markers = args.markers
-
-
-class bin_data:
-    def __init__(self, b, args):
-        self.filename = b.filename
-        self.path = b.path
-        self.contigs = b.contigs
-        self.window = args.window
-        self.gc_map = graphs.scatter_gc(b.contigs, args.window)
-        self.gc_density = graphs.distplot_gc(b.contigs)
-        self.coding_density = graphs.scatter_GC_coding_density(b.contigs)
-        self.tetra_heatmap = graphs.dendrogram_tetra(b.contigs, args.c)
-        self.taxonomy_map = graphs.contigs_taxonomy(b.contigs)

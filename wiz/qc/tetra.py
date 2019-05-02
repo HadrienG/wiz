@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 
+"""
+File that gathers the necessary functions for tetranucleic operations.
+"""
+
 from os import cpu_count
 from multiprocessing import Pool
-import logging
 
 
 def tetranuc_count(sequence):
+    """
+    Function who's calculating the proportion of each
+    tetranucleotid in a sequence.
+    """
     tetra_dic = {}
     total_count = len(sequence)-3
     buffer = str(sequence[:3])
@@ -23,8 +30,13 @@ def tetranuc_count(sequence):
     return tetra_dic
 
 
-def tetra_manhattan_distance(seq1={}, seq2={}):
-    # https://fr.wikipedia.org/wiki/Distance_de_Manhattan
+def tetra_manhattan_distance(seq1, seq2):
+    """
+    A function that calculates the Manhattan distance between two
+    dictionaries representative of the proportion of tetranucleotides
+    in each sequence.
+    https://fr.wikipedia.org/wiki/Distance_de_Manhattan
+    """
     dimensions = [key for key in seq1.keys()]
     for key in seq2.keys():
         if key not in dimensions:
@@ -41,18 +53,22 @@ def tetra_manhattan_distance(seq1={}, seq2={}):
 
 
 def distance_calculation(contigs, nb_process=(cpu_count()-1)):
+    """
+    Function that prepares the tasks for the pool calculates
+    and launches this one
+    """
     tasks = []
-    for contig_I in contigs[:-1]:
-        for contig_J in contigs[contigs.index(contig_I)+1:]:
+    for contig_i in contigs[:-1]:
+        for contig_j in contigs[contigs.index(contig_i)+1:]:
             tasks.append(
                 (
                     (
-                        contig_I.id,
-                        contig_J.id
+                        contig_i.uid,
+                        contig_j.uid
                     ),
                     (
-                        tetranuc_count(contig_I.sequence),
-                        tetranuc_count(contig_J.sequence)
+                        tetranuc_count(contig_i.sequence),
+                        tetranuc_count(contig_j.sequence)
                     )
                 ))
     results = []
@@ -66,6 +82,10 @@ def distance_calculation(contigs, nb_process=(cpu_count()-1)):
 
 
 def compute_dist(task):
-    id, values = task
+    """
+    Function used in the parallelization of Manhattan distance
+    calculation tasks between two sequences.
+    """
+    id_task, values = task
     result = tetra_manhattan_distance(values[0], values[1])
-    return (id, result)
+    return (id_task, result)

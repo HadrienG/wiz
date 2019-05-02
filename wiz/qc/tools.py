@@ -1,15 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 
-import logging
+"""
+File that gathers the necessary functions and tools for wiz qc.
+"""
+
 import os
-from wiz.misc import path
+import logging
 import subprocess
+
+from wiz.misc import path
 
 logger = logging.getLogger(__name__)
 
 
 def create_dirs(output, force_overwrite):
+    """
+    Function that creates the folders needed by the program.
+    """
     logger.debug(" Creating dirs")
     if not os.path.exists(output) or force_overwrite:
         if force_overwrite:
@@ -30,10 +38,12 @@ def create_dirs(output, force_overwrite):
 
 
 def check_window_size(sequence, window_size):
-    # check the value of the window size and the length of the sequence
-    # the window_size must be 0 < size <= lenght(sequence)
-    # the lenght must be 0 < lenght(sequence)
-    if len(sequence) == 0:
+    """
+    check the value of the window size and the length of the sequence
+    the window_size must be 0 < size <= lenght(sequence)
+    the lenght must be 0 < lenght(sequence)
+    """
+    if not sequence:  # len(sequence) == 0:
         error = "The sequence is void."
         raise ValueError(error)
     if window_size < 0:
@@ -50,6 +60,9 @@ def check_window_size(sequence, window_size):
 
 
 def file_name(file):
+    """
+    function who extract the name in a path
+    """
     file = os.path.basename(file)
     # if filename = file.ext the part ext is removed
     # ! problem if filename is file.10 because the number is removed
@@ -59,10 +72,14 @@ def file_name(file):
     return file
 
 
-def genes(path, file):
+def genes(path_file, file):
+    """
+    Function who's extracting the genes positions inside a
+    prodigal output file.
+    """
     sequence = {}
-    with open(f"{os.path.abspath(path)}/{file}.gff", 'r') as f:
-        for i in f.readlines():
+    with open(f"{os.path.abspath(path_file)}/{file}.gff", 'r') as read_file:
+        for i in read_file.readlines():
             # if the line is not a Prodigal comment
             if "#" not in i:
                 cut = i.split("\t")
@@ -80,7 +97,9 @@ def genes(path, file):
 
 
 def finch_sketch(filename, output):
-    # prepare a sketch of the "filename" to being compared with a sketchsbank
+    """
+    prepare a sketch of the "filename" to being compared with a sketchsbank
+    """
     finch = path.software_exists("finch")
     logger.info(f" Finch sketching contigs in {filename}")
     s_args = [
@@ -95,7 +114,9 @@ def finch_sketch(filename, output):
 
 
 def finch_dist(filename, dbs, outdir):
-    # search distance between sketchsbank and a sketch of file "filename"
+    """
+    search distance between sketchsbank and a sketch of file "filename"
+    """
     logger.info(f" Finch compare {filename} to DB")
     finch = path.software_exists("finch")
     s_args = [
@@ -112,12 +133,15 @@ def finch_dist(filename, dbs, outdir):
 
 
 def hmmscan(filename, profil, outdir):
+    """
+    Make a hmmscan research
+    """
     txt = [file_name(filename), file_name(profil)]
     logger.info(f" Hmmer compare {txt[0]} and {txt[1]}")
     # compare a marker profil and proteins in file "filename"
-    hmmscan = path.software_exists("hmmscan")
+    hmmer = path.software_exists("hmmscan")
     s_args = [
-        hmmscan,
+        hmmer,
         "--noali",
         # "--max",
         "--tblout",
@@ -125,6 +149,6 @@ def hmmscan(filename, profil, outdir):
         profil,
         filename
     ]
-    FNULL = open(os.devnull, "w")  # opening /dev/null like a file
-    subprocess.run(s_args, stdout=FNULL)  # writing stdout in /dev/null
+    fnull = open(os.devnull, "w")  # opening /dev/null like a file
+    subprocess.run(s_args, stdout=fnull)  # writing stdout in /dev/null
     logger.debug(" HMMScan end")

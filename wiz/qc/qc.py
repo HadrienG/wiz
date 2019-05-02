@@ -1,14 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 
-import os
+"""
+main function of module QC.
+"""
+
 import sys
 import logging
+
 from Bio import SeqIO
-from wiz.qc import report, tools, taxonomy
-from wiz.qc.bins import Bins, Contig
-# from wiz.qc.phylo import phylogeny
+
+from wiz.qc import report
+from wiz.qc import tools
+# from wiz.qc import taxonomy
+from wiz.qc import cd
+from wiz.qc.bins import Bins
+from wiz.qc.bins import Contig
 from wiz.annotate.tools import prodigal
+# from wiz.qc.phylo import phylogeny
 
 
 def run(args):
@@ -21,9 +30,9 @@ def run(args):
         bins = []
         tools.create_dirs(args.output, args.force)
         for genome_file in args.genomes:
-            f = open(genome_file, 'r')
-            with f:
-                fasta_file = SeqIO.parse(f, 'fasta')
+            file = open(genome_file, 'r')
+            with file:
+                fasta_file = SeqIO.parse(file, 'fasta')
                 logger.info(f" Loading {genome_file}")
                 contigs = []
                 for record in fasta_file:
@@ -38,9 +47,9 @@ def run(args):
             genome_genes = tools.genes(output, b.filename)
             for contig in b.contigs:
                 second_name = f"Prodigal_Seq_{str(b.contigs.index(contig)+1)}"
-                if contig.id in genome_genes.keys():
-                    contig.genes_position = genome_genes[contig.id]
-                    contig.coding_density = taxonomy.coding_density(
+                if contig.uid in genome_genes.keys():
+                    contig.genes_position = genome_genes[contig.uid]
+                    contig.coding_density = cd.coding_density(
                         contig.genes_position,
                         contig.length)
                 # if the sequence in fasta file don't have a correct name
@@ -48,35 +57,33 @@ def run(args):
                 # a name like prodigal default name
                 elif second_name in genome_genes.keys():
                     contig.genes_position = genome_genes[second_name]
-                    contig.coding_density = taxonomy.coding_density(
+                    contig.coding_density = cd.coding_density(
                         contig.genes_position,
                         contig.length)
             # # taxonomic analysis
-            # for contig in b.contigs:                  # TODO uncomment before release
-            #     contig.taxonomy = taxonomy.taxonomy(  # TODO uncomment before release
-            #         contig.id,                        # TODO uncomment before release
-            #         contig.sequence,                  # TODO uncomment before release
-            #         args)                             # TODO uncomment before release
+            # TODO uncomment before release
+            # for contig in b.contigs:
+            #     contig.taxonomy = taxonomy.taxonomy(
+            #         contig.uid,
+            #         contig.sequence,
+            #         args)
 
             # # Implementation of phylogenic analysis in the bad module
             # # phylogenic analysis based on prodigal output
             # phylo = phylogeny(b.filename, args)
             # for contig in b.contigs:
-            #     if contig.id in phylo.keys():
-            #         contig.phylogeny_profils = phylo[contig.id]
+            #     if contig.uid in phylo.keys():
+            #         contig.phylogeny_profils = phylo[contig.uid]
 
         report_data = report.Report(bins, args)
         report.jinja_report(report_data, args)
 
-    except ValueError as Ve:
+    except ValueError as error:
         logger.error(" something bad happened")
-        logger.error(Ve)
+        logger.error(error)
         sys.exit(1)
     except KeyboardInterrupt:
         logger.error(" something bad happened ?")
         logger.error(" You cancelled the operations.")
     else:
         logger.info(" wiz qc finished. Goodbye.")
-
-# TODO search this line in each file
-# TODO " # TODO uncomment before release "
