@@ -64,7 +64,6 @@ None
 joblib, principal composant analysis, MDS 
 
 
-
 metric notes :
 time pipenv run wiz qc -g /stage/Shuffle_200 -w 500  
     scipy funct    
@@ -104,3 +103,7 @@ Possibility of sequence with a unique contig, dendrotetra bug if a only one sequ
 [X] comment code,
 [X] make test,
 [X] add data in report,
+
+[ ] spot the bug of singular matrice (line 260 in graphs.py)
+[ ] try to disable the line 259 of graphs.py
+[ ] try to reduce the conditions in line 387 to line 428
