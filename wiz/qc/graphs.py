@@ -348,7 +348,6 @@ def contigs_taxonomy(genome):
     the bin if these have been identified by taxadb
     """
     logger.debug("drawing contigs_taxonomy graph")
-    dict_link, nodes, colors = {}, [], []
 
     rank_order = [
         "no rank",
@@ -374,55 +373,7 @@ def contigs_taxonomy(genome):
         "species": "#cc66cc"
         }
 
-    for contig in genome:
-        """
-        tax is a tuple list with a dictionary representing the taxonomic
-        lineage and jaccard distance of this lineage for the contig
-        """
-
-        lineages = contig.taxonomy
-        for lineage in lineages:
-            lineage_step, jaccard = lineage
-            if lineage_step["no rank"] != "Not found":
-                for rank in rank_order:
-                    if rank != "query":
-                        if rank in lineage_step.keys() and \
-                                lineage_step[rank] not in nodes:
-                            nodes.append(lineage_step[rank])
-                            colors.append(rank_color[rank])
-
-                    else:
-                        if contig.uid not in nodes:
-                            nodes.append(contig.uid)
-                            colors.append(rank_color[rank])
-
-                for rank in rank_order[:-1]:
-                    if rank in lineage_step.keys():
-                        actual_node = nodes.index(lineage_step[rank])
-
-                        for rk in rank_order[rank_order.index(rank)+1:]:
-                            if rk in lineage_step.keys():
-                                next_node = nodes.index(lineage_step[rk])
-                                break
-
-                        if actual_node != next_node:
-                            if (actual_node, next_node) in dict_link.keys():
-                                dict_link[(actual_node, next_node)] += \
-                                    1/jaccard  # More jaccard is small plus
-                                # the graph segment must be big, so we
-                                # use the inverse of the jaccard value.
-
-                            else:
-                                dict_link[(actual_node, next_node)] = 1/jaccard
-
-                        else:
-                            next_node = nodes.index(contig.uid)
-                            if (actual_node, next_node) in dict_link.keys():
-                                dict_link[(actual_node, next_node)] += \
-                                    1/jaccard
-
-                            else:
-                                dict_link[(actual_node, next_node)] = 1/jaccard
+    dict_link, nodes, colors = get_nodes(genome, rank_color, rank_order)
 
     # nodes == false like if len(nodes) != 0
     # if all results are ["no rank"] == "Not found"
@@ -468,3 +419,59 @@ def contigs_taxonomy(genome):
         return plot(fig, include_plotlyjs=True, output_type='div')
 
     return "No taxid found, can be check --lineage_stepdb or --finchdb"
+
+
+def get_nodes(genome, rank_color, rank_order):
+    """
+    Function generating the necessary data to draw the taxonomic map.
+    """
+    dict_link, nodes, colors = {}, [], []
+    for contig in genome:
+        """
+        tax is a tuple list with a dictionary representing the taxonomic
+        lineage and jaccard distance of this lineage for the contig
+        """
+        lineages = contig.taxonomy
+        for lineage in lineages:
+            lineage_step, jaccard = lineage
+            if lineage_step["no rank"] != "Not found":
+                for rank in rank_order:
+                    if rank != "query":
+                        if rank in lineage_step.keys() and \
+                                lineage_step[rank] not in nodes:
+                            nodes.append(lineage_step[rank])
+                            colors.append(rank_color[rank])
+
+                    else:
+                        if contig.uid not in nodes:
+                            nodes.append(contig.uid)
+                            colors.append(rank_color[rank])
+
+                for rank in rank_order[:-1]:
+                    if rank in lineage_step.keys():
+                        actual_node = nodes.index(lineage_step[rank])
+
+                        for rk in rank_order[rank_order.index(rank)+1:]:
+                            if rk in lineage_step.keys():
+                                next_node = nodes.index(lineage_step[rk])
+                                break
+
+                        if actual_node != next_node:
+                            if (actual_node, next_node) in dict_link.keys():
+                                dict_link[(actual_node, next_node)] += \
+                                    1/jaccard  # More jaccard is small plus
+                                # the graph segment must be big, so we
+                                # use the inverse of the jaccard value.
+
+                            else:
+                                dict_link[(actual_node, next_node)] = 1/jaccard
+
+                        else:
+                            next_node = nodes.index(contig.uid)
+                            if (actual_node, next_node) in dict_link.keys():
+                                dict_link[(actual_node, next_node)] += \
+                                    1/jaccard
+
+                            else:
+                                dict_link[(actual_node, next_node)] = 1/jaccard
+    return dict_link, nodes, colors
