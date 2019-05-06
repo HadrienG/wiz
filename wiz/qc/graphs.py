@@ -418,7 +418,7 @@ def contigs_taxonomy(genome):
         # return the graph in html format with javascript
         return plot(fig, include_plotlyjs=True, output_type='div')
 
-    return "No taxid found, can be check --lineage_stepdb or --finchdb"
+    return "No taxid found, can be check --taxadb or --finchdb"
 
 
 def get_nodes(genome, rank_color, rank_order):
