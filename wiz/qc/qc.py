@@ -12,7 +12,7 @@ from Bio import SeqIO
 
 from wiz.qc import report
 from wiz.qc import tools
-# from wiz.qc import taxonomy
+from wiz.qc import taxonomy
 from wiz.qc import cd
 from wiz.qc.bins import Bins
 from wiz.qc.bins import Contig

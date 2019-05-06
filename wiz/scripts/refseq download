@@ -1,0 +1,34 @@
+#!/bin/bash
+
+ascp -i /home/antoine/.aspera/connect/etc/asperaweb_id_dsa.openssh -k1 -Tr -E '*.gpff.*' -E '*.gbff.*' -E '*.faa*' -E '*rna*'  anonftp@ftp.ncbi.nlm.nih.gov:/refseq/release/plasmid/ /db/refseq/
+ascp -i /home/antoine/.aspera/connect/etc/asperaweb_id_dsa.openssh -k1 -Tr -E '*.gpff.*' -E '*.gbff.*' -E '*.faa*' -E '*rna*'  anonftp@ftp.ncbi.nlm.nih.gov:/refseq/release/archaea/ /db/refseq/
+ascp -i /home/antoine/.aspera/connect/etc/asperaweb_id_dsa.openssh -k1 -Tr -E '*.gpff.*' -E '*.gbff.*' -E '*.faa*' -E '*rna*'  anonftp@ftp.ncbi.nlm.nih.gov:/refseq/release/viral/ /db/refseq/
+ascp -i /home/antoine/.aspera/connect/etc/asperaweb_id_dsa.openssh -k1 -Tr -E '*.gpff.*' -E '*.gbff.*' -E '*.faa*' -E '*rna*'  anonftp@ftp.ncbi.nlm.nih.gov:/refseq/release/bacteria/ /db/refseq/
+
+# gunzip -fkv /db/refseq/plasmid/*.gz
+/db/fasta_spliter -f /db/refseq/plasmid/*.fna
+finch sketch /db/refseq/plasmid/fna/*.fna -n -k 31 -o plasmid_n_k31.sk
+mv /db/refseq/plasmid/fna/plasmid*.sk /db/finch_db/
+rm /db/refseq/plasmid/fna/*.fna
+
+#gunzip -fkv /db/refseq/archaea/*.gz
+/db/fasta_spliter -f /db/refseq/archaea/*.fna
+finch sketch /db/refseq/archaea/fna/*.fna -n -k 31 -o archaea_n_k31.sk
+mv /db/refseq/archaea/fna/archaea*.sk /db/finch_db/
+rm /db/refseq/archaea/fna/*.fna
+
+#gunzip -fkv /db/refseq/viral/*.gz
+/db/fasta_spliter -f /db/refseq/viral/*.fna
+finch sketch /db/refseq/viral/fna/*.fna -n -k 31 -o viral_n_k31.sk
+mv /db/refseq/viral/fna/viral*.sk /db/finch_db/
+rm /db/refseq/viral/fna/*.fna
+
+#gunzip -fkv /db/refseq/bacteria/*.gz
+/db/fasta_spliter -f /db/refseq/bacteria/*.fna
+#The following line is problematic due to the number of files generated with fastaspliter, the ideal is to distribute the files in several folders, to sketch each folder and then aglomerate the files into one. For that finch sketch -f on the whole sketch file seems a good way to aglomerate them.
+finch sketch /db/refseq/bacteria/fna/*.fna -n -k 31 -o bacteria_n_k31.sk
+mv /db/refseq/bacteria/fna/bacteria*.sk /db/finch_db/
+rm /db/refseq/bacteria/fna/*.fna
+
+echo done
+

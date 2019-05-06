@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
+"""
+Explode a fasta file into 1 file per sequence to be used by finch to sketch the sequences and keep their names.
+Please, find a more elegant way to do that.
+"""
+
+from Bio import SeqIO
+import argparse
+import os
+
+from taxadb.names import SciName
+names = SciName(dbtype='sqlite', dbname="/db/taxadb/taxadb.sqlite")
+
+parser = argparse.ArgumentParser(
+    prog="refseq dl",
+    usage="refseq [options] ...",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
+parser.add_argument(
+    "-f",
+    "--file",
+    type=str,
+    metavar="",
+    help="input file in fasta format",
+    #default="/db/refseq/plasmid/plasmid.1.1.genomic.fna",
+    required=True,
+    nargs='+'
+)
+args = parser.parse_args()
+count_seq = 0
+count_folder = 0
+for file in args.file:
+    path = os.path.dirname(file)
+    fasta_file = SeqIO.parse(file, "fasta")
+    print(f"spliting {file}")
+    for record in fasta_file:
+        name = record.description
+        sID = record.id
+        print(name)
+        if "," in name:
+            name = name.split(",")[0]
+        namelist = name.split(' ')[1:]
+        name = ""
+        for i in namelist:
+            name += f"{i} "
+        name = name.lower().strip()
+        tax_id = names.taxid(name)
+        while type(tax_id) != int:
+            namelist = name.split(' ')[:-1]
+            name = ""
+            namelist.pop()
+            for i in namelist:
+                name += f"{i} "
+            name = name.strip()
+            tax_id = names.taxid(name)
+            print(name, tax_id)
+        input()
+        seq = str(record.seq)
+        if not os.path.isdir(f"{path}/folder/folder_{count_folder}"):
+            os.makedirs(f"{path}/folder/folder_{count_folder}")
+        if not os.path.isfile(f"{path}/folder/folder_{count_folder}/{name}.{sID}"):
+            with open(f"{path}/folder/folder_{count_folder}/{name}", "w") as fw:
+                fw.write(f"> {name}\n")
+                fw.write(seq)
+                fw.write("\n\n")
+        count_seq += 1
+        if count_seq >= 20000:
+            count_folder += 1
+            count_seq = 0

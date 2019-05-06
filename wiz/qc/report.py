@@ -108,7 +108,7 @@ def jinja_body(header_data, bins_reports):
         cpu=header_data.cpu,
         taxadb=header_data.taxadb,
         sketchs=header_data.finch,
-        profils=header_data.markers,
+        # profils=header_data.markers,
         bin_reports=bins_reports
     )
     return output
