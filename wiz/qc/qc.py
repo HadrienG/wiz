@@ -69,11 +69,11 @@ def run(args):
 
             # # taxonomic analysis
             # TODO uncomment before release
-            # for contig in b.contigs:
-            #     contig.taxonomy = taxonomy.taxonomy(
-            #         contig.uid,
-            #         contig.sequence,
-            #         args)
+            for contig in b.contigs:
+                contig.taxonomy = taxonomy.taxonomy(
+                    contig.uid,
+                    contig.sequence,
+                    args)
 
             # # Implementation of phylogenic analysis in the bad module
             # # phylogenic analysis based on prodigal output

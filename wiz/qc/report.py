@@ -40,7 +40,6 @@ class Header:
         # self.force = args.force
         self.finch = args.finchdb
         self.taxadb = args.taxadb
-        self.markers = args.markers
 
 
 class BinData:

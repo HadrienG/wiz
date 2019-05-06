@@ -133,14 +133,14 @@ def main():
         help="Path to the taxadb sqlite database",
         metavar="path/to/taxadb.sqlite"
     )
-    parser_qc.add_argument(
-        "--markers",
-        type=str,
-        help="Path to genetics markers profils",
-        required=True,
-        nargs="+",
-        metavar="marker.hmm"
-    )
+    # parser_qc.add_argument(
+    #     "--markers",
+    #     type=str,
+    #     help="Path to genetics markers profils",
+    #     required=True,
+    #     nargs="+",
+    #     metavar="marker.hmm"
+    # )
     # optional arguments
     parser_qc.add_argument(
         "-o",

@@ -7,7 +7,7 @@ from wiz.qc import tetra
 
 class Contig:
     def __init__(self, contig, window):
-        self.id = contig.id
+        self.uid = contig.id
         self.name = contig.name
         self.sequence = contig.seq
 

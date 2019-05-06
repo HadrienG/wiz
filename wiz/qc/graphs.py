@@ -180,15 +180,12 @@ def distplot_gc(contigs):
 
     logger.debug("drawing distplot_gc graph")
 
-    seq_values, seq_names, _ = extract_values(contigs)
-    values_temp = []
-
-    for i in seq_values:
-        if not isinstance(i, list):
-            i = [i, 1]
-        values_temp.append(i)
-
-    fig = distplot(values_temp, seq_names, show_hist=False)
+    gc_averages, seq_names, _ = extract_values(contigs)
+    values_debug = [len(i) for i in gc_averages]
+    logger.debug(f"distplot_gc: {len(seq_names)} | {values_debug}")
+    # TODO fix bug here, if a contig have a only one value for averages_gc
+    # this next line crash
+    fig = distplot(gc_averages, seq_names, show_hist=False)
 
     fig['layout'].update(
         title="Reads ratio per GC average",
@@ -390,7 +387,7 @@ def contigs_taxonomy(genome):
                 for rank in rank_order:
                     if rank != "query":
                         if rank in lineage_step.keys() and \
-                               lineage_step[rank] not in nodes:
+                                lineage_step[rank] not in nodes:
                             nodes.append(lineage_step[rank])
                             colors.append(rank_color[rank])
 
