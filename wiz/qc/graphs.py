@@ -274,8 +274,8 @@ def dendrogram_tetra(contigs, cpu):
 
         # edit layout
         fig['layout'].update({
-            'width': 1600,
-            'height': 900,
+            'width': 800,
+            'height': 450,
             'showlegend': False,
             "hovermode": "closest"
             })
