@@ -44,3 +44,7 @@ class Bins:
         self.path = path
         # The contigs variable is a contig object list
         self.contigs = contigs
+
+
+# TODO Move the contigs GC bounds computation to the whole bins and adapt
+# the function to that usage in gc.py bounds.

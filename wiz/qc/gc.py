@@ -34,6 +34,9 @@ def average_gc(sequence, window=-1):
         for pos in range(0, lenght, window):
             if pos+window <= lenght:
                 average.append(GC(sequence[pos:pos+window]))
+    # ! Warning If the user enters exactly the same size of window
+    # ! as the size of the smallest sequence the program may crash
+    # TODO fix that
     if window == len(sequence):
         return average[0]
     return average

@@ -274,8 +274,8 @@ def dendrogram_tetra(contigs, cpu):
 
         # edit layout
         fig['layout'].update({
-            # 'width': 800,
-            # 'height': 800,
+            'width': 1600,
+            'height': 900,
             'showlegend': False,
             "hovermode": "closest"
             })
@@ -325,8 +325,7 @@ def dendrogram_tetra(contigs, cpu):
 
         # edit title of the graph
         fig['layout'].update(
-            title="proximity between two sequences based on their \
-                composition tetra nucleic"
+            title="proximity between two sequences based on their composition tetra nucleic"
         )
 
         # developement line to draw directly the graph during the run
@@ -466,7 +465,7 @@ def get_nodes(genome, rank_color, rank_order):
                             else:
                                 dict_link[(actual_node, next_node)] = 1/jaccard
 
-                        else:
+                        else: # TODO consider the case where Jaccard's distance is 0. 1 divide by jaccard will cause a bug
                             next_node = nodes.index(contig.uid)
                             if (actual_node, next_node) in dict_link.keys():
                                 dict_link[(actual_node, next_node)] += \
